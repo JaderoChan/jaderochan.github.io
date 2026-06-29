@@ -228,7 +228,7 @@
       <h2 class="zh">关于我</h2>
       <h2 class="en lang-hidden">About Me</h2>
       <div class="profile-card">
-        <img class="avatar" src="https://github.com/JaderoChan.png" alt="JaderoChan avatar" />
+        <img class="avatar" src="https://github.com/JaderoChan.png" alt="JaderoChan avatar" onerror="this.style.display='none'" />
         <div class="profile-info">
           <h3>頔珞 · JaderoChan</h3>
           <p class="zh">
@@ -420,7 +420,7 @@
         const ssHtml = p.screenshot ? `
           <div class="project-screenshot-wrap">
             <a href="${p.url}" target="_blank" rel="noreferrer">
-              <img class="project-screenshot" src="${p.screenshot}" alt="${p.name} screenshot" loading="lazy" />
+              <img class="project-screenshot" src="${p.screenshot}" alt="${p.name} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
             </a>
           </div>` : '';
 
