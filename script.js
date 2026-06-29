@@ -181,9 +181,7 @@ function renderProjects() {
 
     const ssHtml = p.screenshot ? `
       <div class="project-screenshot-wrap">
-        <a href="${p.url}" target="_blank" rel="noreferrer">
-          <img class="project-screenshot" src="${p.screenshot}" alt="${p.display} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
-        </a>
+        <img class="project-screenshot" src="${p.screenshot}" alt="${p.display} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
       </div>` : '';
 
     return `
@@ -197,7 +195,6 @@ function renderProjects() {
             <span class="badge">⭐ ${stars}</span>
             <span class="badge">🍴 ${forks}</span>
             <span class="badge">📝 ${commits} ${commitLabel}</span>
-            <a class="meta-link" href="${p.url}" target="_blank" rel="noreferrer">GitHub ↗</a>
           </div>
         </div>
         ${ssHtml}
