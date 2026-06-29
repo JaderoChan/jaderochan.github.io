@@ -1,4 +1,5 @@
 const GITHUB_USER = 'JaderoChan';
+const CONTACT_EMAIL = 'c_dl_cn@outlook.com';
 const API = 'https://api.github.com';
 
 const projects = [
@@ -251,13 +252,10 @@ function setTheme(theme) {
 }
 
 function setupEmail() {
-  const user = 'c_dl_cn';
-  const domain = 'outlook.com';
-  const email = `${user}@${domain}`;
   const emailLink = document.getElementById('emailLink');
   if (!emailLink) return;
-  emailLink.href = `mailto:${email}`;
-  emailLink.textContent = `📧 ${email}`;
+  emailLink.href = `mailto:${CONTACT_EMAIL}`;
+  emailLink.textContent = `📧 ${CONTACT_EMAIL}`;
 }
 
 document.getElementById('langBtn').addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
@@ -266,7 +264,8 @@ document.getElementById('themeBtn').addEventListener('click', () => setTheme(sta
 setTheme(state.theme);
 setLang(state.lang);
 setupEmail();
-document.getElementById('year').textContent = new Date().getFullYear();
-document.getElementById('year2').textContent = new Date().getFullYear();
+const currentYear = new Date().getFullYear();
+document.getElementById('year').textContent = currentYear;
+document.getElementById('year2').textContent = currentYear;
 
 loadData();

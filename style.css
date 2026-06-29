@@ -199,7 +199,7 @@ h2 { margin: 0 0 18px; font-size: 24px; }
 .project-body h3 a { color: var(--text); text-decoration: none; }
 .project-body h3 a:hover { color: var(--brand); }
 .project-desc { color: var(--text-soft); font-size: 14px; margin: 0 0 12px; }
-.project-meta-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.project-meta-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
 .meta-link { color: var(--brand); text-decoration: none; font-size: 13px; }
 .meta-link:hover { text-decoration: underline; }
 .project-screenshot-wrap { flex-shrink: 0; width: 200px; }
