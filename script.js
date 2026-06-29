@@ -3,7 +3,6 @@ const API = 'https://api.github.com';
 
 const projects = [
   {
-    key: 'mybase',
     display: 'mybase',
     repo: 'MyBase',
     url: 'https://github.com/JaderoChan/MyBase',
@@ -13,7 +12,6 @@ const projects = [
     screenshot: null
   },
   {
-    key: 'hid_tool',
     display: 'hid_tool',
     repo: 'hidtool',
     url: 'https://github.com/JaderoChan/hidtool',
@@ -23,7 +21,6 @@ const projects = [
     screenshot: null
   },
   {
-    key: 'global_hotkey',
     display: 'global_hotkey',
     repo: 'global_hotkey',
     url: 'https://github.com/JaderoChan/global_hotkey',
@@ -33,7 +30,6 @@ const projects = [
     screenshot: null
   },
   {
-    key: 'mcnbt',
     display: 'mcnbt',
     repo: 'mcnbt',
     url: 'https://github.com/JaderoChan/mcnbt',
@@ -43,7 +39,6 @@ const projects = [
     screenshot: null
   },
   {
-    key: 'bpnn',
     display: 'bpnn',
     repo: 'BPNN',
     url: 'https://github.com/JaderoChan/BPNN',
@@ -53,7 +48,6 @@ const projects = [
     screenshot: 'https://raw.githubusercontent.com/JaderoChan/BPNN/main/example/digit_recognizer/images/predict_result.png'
   },
   {
-    key: 'taylor_series_compute_log',
     display: 'taylor_series_compute_log',
     repo: 'Taylor-Series-compute-log',
     url: 'https://github.com/JaderoChan/Taylor-Series-compute-log',
@@ -63,7 +57,6 @@ const projects = [
     screenshot: null
   },
   {
-    key: 'content_aware_image_crop',
     display: 'ContentAwareImageCrop',
     repo: 'ContentAwareImageCrop',
     url: 'https://github.com/JaderoChan/ContentAwareImageCrop',
@@ -73,7 +66,6 @@ const projects = [
     screenshot: 'https://raw.githubusercontent.com/JaderoChan/ContentAwareImageCrop/main/screenshot/sufer_cropped.png'
   },
   {
-    key: 'easylink',
     display: 'EasyLink',
     repo: 'EasyLinks',
     url: 'https://github.com/JaderoChan/EasyLinks',
@@ -83,7 +75,6 @@ const projects = [
     screenshot: 'https://raw.githubusercontent.com/JaderoChan/EasyLinks/main/doc/screenshots/progress_dialog_en.png'
   },
   {
-    key: 'opencmdanywhere',
     display: 'OpenCMDAnyWhere',
     repo: 'OpenCmdAnywhere',
     url: 'https://github.com/JaderoChan/OpenCmdAnywhere',
@@ -259,11 +250,22 @@ function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
 }
 
+function setupEmail() {
+  const user = 'c_dl_cn';
+  const domain = 'outlook.com';
+  const email = `${user}@${domain}`;
+  const emailLink = document.getElementById('emailLink');
+  if (!emailLink) return;
+  emailLink.href = `mailto:${email}`;
+  emailLink.textContent = `📧 ${email}`;
+}
+
 document.getElementById('langBtn').addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
 document.getElementById('themeBtn').addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
 setTheme(state.theme);
 setLang(state.lang);
+setupEmail();
 document.getElementById('year').textContent = new Date().getFullYear();
 document.getElementById('year2').textContent = new Date().getFullYear();
 
