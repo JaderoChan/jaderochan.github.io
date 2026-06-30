@@ -178,7 +178,6 @@ let cachedReadmeDocMap = {};
 let cachedRenderedMarkdownMap = {};
 let cachedRepoContentMap = {};
 let cachedMyBaseStructure = null;
-let cachedMyBaseOverviewHtmlMap = {};
 
 // Pre-populate readme path cache from project configs to avoid directory-scanning API calls
 for (const project of featuredProjects) {
@@ -658,17 +657,6 @@ async function loadMyBaseStructure() {
   return cachedMyBaseStructure;
 }
 
-async function loadMyBaseOverviewHtml() {
-  const readmeDoc = await getReadmeDoc(MY_BASE_REPO, state.lang);
-  const cacheKey = readmeDoc ? `${state.lang}:${readmeDoc.path}:${readmeDoc.sha || ''}` : `${state.lang}:missing`;
-  if (cacheKey in cachedMyBaseOverviewHtmlMap) return cachedMyBaseOverviewHtmlMap[cacheKey];
-  if (!readmeDoc) {
-    cachedMyBaseOverviewHtmlMap[cacheKey] = '';
-    return cachedMyBaseOverviewHtmlMap[cacheKey];
-  }
-  cachedMyBaseOverviewHtmlMap[cacheKey] = await renderGitHubMarkdown(readmeDoc.markdown, MY_BASE_REPO, readmeDoc);
-  return cachedMyBaseOverviewHtmlMap[cacheKey];
-}
 
 function renderStats() {
   const grid = document.getElementById('statsGrid');
@@ -860,7 +848,7 @@ function renderMyBaseItem(item) {
   `;
 }
 
-function renderMyBaseOverview(structure, overviewHtml) {
+function renderMyBaseOverview(structure) {
   const isZh = state.lang === 'zh';
   const repo = structure.repo || {};
   const totalItems = structure.modules.reduce((sum, module) => sum + module.items.length, 0);
@@ -906,9 +894,6 @@ function renderMyBaseOverview(structure, overviewHtml) {
           <span class="badge">📦 ${structure.modules.length} ${isZh ? '分类' : 'modules'}</span>
           <span class="badge">🧾 ${totalItems} ${isZh ? '公开条目' : 'public items'}</span>
           <span class="badge">🕒 ${updatedLabel}: ${formatDate(repo.updated_at)}</span>
-        </div>
-        <div class="readme-panel">
-          <div class="readme-content">${overviewHtml || `<p>${isZh ? '暂无可用仓库简介。' : 'Repository overview is unavailable right now.'}</p>`}</div>
         </div>
       </article>
       <div class="module-grid">
@@ -966,12 +951,9 @@ async function renderMyBaseContent() {
     return;
   }
 
-  const [structure, overviewHtml] = await Promise.all([
-    loadMyBaseStructure(),
-    loadMyBaseOverviewHtml()
-  ]);
+  const structure = await loadMyBaseStructure();
 
-  container.innerHTML = renderMyBaseOverview(structure, overviewHtml);
+  container.innerHTML = renderMyBaseOverview(structure);
   bindMyBasePreviewButtons();
   await renderMyBasePreview();
 }
