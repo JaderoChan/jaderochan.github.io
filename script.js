@@ -169,6 +169,30 @@ function encodeContentPath(path) {
   return path.split('/').map((part) => encodeURIComponent(part)).join('/');
 }
 
+function normalizeRepoPath(path) {
+  return String(path || '').replace(/^\/+/, '').toLowerCase();
+}
+
+function pickPreferredReadmePath(paths, lang) {
+  if (!Array.isArray(paths) || !paths.length) return null;
+
+  const pathMap = new Map(paths.map((path) => [normalizeRepoPath(path), path]));
+  const orderedCandidates = lang === 'zh'
+    ? [...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.fallback]
+    : [...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.fallback];
+
+  for (const candidate of orderedCandidates) {
+    const matched = pathMap.get(normalizeRepoPath(candidate));
+    if (matched) return matched;
+  }
+
+  return paths.find((path) => /^readme(\..+)?$/i.test((path.split('/').pop() || '').trim())) || null;
+}
+
+function isFallbackReadmePath(path) {
+  return README_PATH_CANDIDATES.fallback.some((candidate) => normalizeRepoPath(candidate) === normalizeRepoPath(path));
+}
+
 function decodeBase64Utf8(base64) {
   try {
     const clean = (base64 || '').replace(/\n/g, '');
@@ -280,16 +304,37 @@ async function resolveReadmePath(repo, lang) {
   const cacheKey = `${repo}:${lang}`;
   if (cacheKey in cachedReadmePathMap) return cachedReadmePathMap[cacheKey];
 
-  const candidates = lang === 'zh'
-    ? [...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.fallback]
-    : [...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.fallback];
+  const readmePaths = [];
+  for (const dir of ['', 'doc', 'docs']) {
+    const suffix = dir ? `/${encodeContentPath(dir)}` : '';
+    const entries = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/contents${suffix}`);
+    if (!Array.isArray(entries)) continue;
+    entries
+      .filter((item) => item?.type === 'file' && /^readme(\..+)?$/i.test(item.name || ''))
+      .forEach((item) => {
+        if (item.path) readmePaths.push(item.path);
+      });
 
-  for (const path of candidates) {
-    const data = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/contents/${encodeContentPath(path)}`);
-    if (data?.type === 'file') {
-      cachedReadmePathMap[cacheKey] = { path, htmlUrl: data.html_url };
-      return cachedReadmePathMap[cacheKey];
-    }
+    const preferred = pickPreferredReadmePath(readmePaths, lang);
+    if (preferred && (dir !== '' || !isFallbackReadmePath(preferred))) break;
+  }
+
+  const preferredPath = pickPreferredReadmePath(readmePaths, lang);
+  if (preferredPath) {
+    cachedReadmePathMap[cacheKey] = {
+      path: preferredPath,
+      htmlUrl: null
+    };
+    return cachedReadmePathMap[cacheKey];
+  }
+
+  const defaultReadme = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/readme`);
+  if (defaultReadme?.type === 'file' && defaultReadme?.path) {
+    cachedReadmePathMap[cacheKey] = {
+      path: defaultReadme.path,
+      htmlUrl: defaultReadme.html_url || null
+    };
+    return cachedReadmePathMap[cacheKey];
   }
 
   cachedReadmePathMap[cacheKey] = null;
