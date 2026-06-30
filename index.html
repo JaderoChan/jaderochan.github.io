@@ -5,95 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>頔珞 JaderoChan Website</title>
   <meta name="description" content="頔珞 JaderoChan Website - bilingual portfolio, project showcase, and Base knowledge hub." />
-  <link rel="icon" href="https://github.com/JaderoChan.png" type="image/png" />
+  <link rel="icon" href="./assets/star.png" type="image/png" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <header>
     <div class="container nav">
       <div class="nav-primary">
-        <a class="brand" href="#home" data-page-link="home">頔珞 JaderoChan Website</a>
+        <a class="brand" href="./index.html">頔珞 JaderoChan Website</a>
         <nav class="nav-links" aria-label="Primary">
-          <a class="nav-link" href="#my-base" data-page-link="my-base"><span class="zh">基</span><span class="en lang-hidden">Base</span></a>
+          <a class="nav-link nav-link-active" href="./index.html"><span class="zh">主页</span><span class="en lang-hidden">Home</span></a>
+          <a class="nav-link" href="./base.html"><span class="zh">基</span><span class="en lang-hidden">Base</span></a>
+          <a class="nav-link" href="./gallery.html"><span class="zh">画廊</span><span class="en lang-hidden">Gallery</span></a>
         </nav>
       </div>
       <div class="controls">
         <button id="langBtn">中 / EN</button>
-        <button id="themeBtn">🌙 / ☀️</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <div class="page" data-page="home">
-      <section class="hero">
-        <h1 class="title">
-          <span class="zh">你好，我是 <span class="grad">頔珞 · JaderoChan</span></span>
-          <span class="en lang-hidden">Hi, I'm <span class="grad">頔珞 · JaderoChan</span></span>
-        </h1>
-        <p class="subtitle zh">
-          杀不死我的终使我更强大。
-        </p>
-        <p class="subtitle en lang-hidden">
-          That which does not kill me makes me stronger.
-        </p>
+    <section class="hero">
+      <h1 class="title">
+        <span class="zh">你好，我是 <span class="grad">頔珞 · JaderoChan</span></span>
+        <span class="en lang-hidden">Hi, I'm <span class="grad">頔珞 · JaderoChan</span></span>
+      </h1>
+      <p class="subtitle zh">
+        杀不死我的终使我更强大。
+      </p>
+      <p class="subtitle en lang-hidden">
+        That which does not kill me makes me stronger.
+      </p>
 
-      </section>
+    </section>
 
-      <section id="about">
-        <h2 class="zh">关于我</h2>
-        <h2 class="en lang-hidden">About Me</h2>
-        <div class="profile-card">
-          <img class="avatar" src="https://github.com/JaderoChan.png" alt="JaderoChan avatar" onerror="this.style.display='none'" />
-          <div class="profile-info">
-            <h3>頔珞 · JaderoChan</h3>
-            <p class="zh">
-              我是一名 C/C++ 开发者，主要聚焦 C/C++ 后端开发、Qt 桌面端开发与跨平台工程实践，具备 Windows、macOS、Linux 多平台开发经验；也长期使用 Python 编写自动化脚本，并熟练使用 CMake 组织构建流程，熟悉 C++17 常用新特性。除了持续投入算法实现、底层原理与性能细节的学习外，我也重视良好的注释习惯、Doxygen 注释文档与 Markdown 文档编写，努力把工程能力沉淀为清晰、可维护、可复用的成果。我目前处于求职状态，期待在算法、系统工具链与高性能工程方向参与更有挑战的项目。
-            </p>
-            <p class="en lang-hidden">
-              I'm a C/C++ developer focused on backend development, Qt desktop applications, and cross-platform engineering across Windows, macOS, and Linux. I also use Python for scripting and automation, work comfortably with CMake-based build systems, and am familiar with practical C++17 features. Alongside continuous work on algorithms, low-level principles, and performance details, I value clear code comments, Doxygen documentation, and well-structured Markdown writing so that engineering outcomes stay maintainable and reusable. I am currently open to work and looking for opportunities in algorithm-focused, systems, and high-performance engineering roles.
-            </p>
-            <div class="contact-links">
-              <a href="https://github.com/JaderoChan" target="_blank" rel="noreferrer">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.071 1.531 1.031 1.531 1.031.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.203 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg>
-                github.com/JaderoChan
-              </a>
-              <a id="emailLink" href="#">📧 Email</a>
-              <span class="badge status-badge zh">🟢 求职中</span>
-              <span class="badge status-badge en lang-hidden">🟢 Open to Work</span>
-            </div>
+    <section id="about">
+      <h2 class="zh">关于我</h2>
+      <h2 class="en lang-hidden">About Me</h2>
+      <div class="profile-card">
+        <img class="avatar" src="https://github.com/JaderoChan.png" alt="JaderoChan avatar" onerror="this.style.display='none'" />
+        <div class="profile-info">
+          <h3>頔珞 · JaderoChan</h3>
+          <p class="zh">
+            我是一名 C/C++ 开发者，主要聚焦 C/C++ 后端开发、Qt 桌面端开发与跨平台工程实践，具备 Windows、macOS、Linux 多平台开发经验；也长期使用 Python 编写自动化脚本，并熟练使用 CMake 组织构建流程，熟悉 C++17 常用新特性。除了持续投入算法实现、底层原理与性能细节的学习外，我也重视良好的注释习惯、Doxygen 注释文档与 Markdown 文档编写，努力把工程能力沉淀为清晰、可维护、可复用的成果。我目前处于求职状态，期待在算法、系统工具链与高性能工程方向参与更有挑战的项目。
+          </p>
+          <p class="en lang-hidden">
+            I'm a C/C++ developer focused on backend development, Qt desktop applications, and cross-platform engineering across Windows, macOS, and Linux. I also use Python for scripting and automation, work comfortably with CMake-based build systems, and am familiar with practical C++17 features. Alongside continuous work on algorithms, low-level principles, and performance details, I value clear code comments, Doxygen documentation, and well-structured Markdown writing so that engineering outcomes stay maintainable and reusable. I am currently open to work and looking for opportunities in algorithm-focused, systems, and high-performance engineering roles.
+          </p>
+          <div class="contact-links">
+            <a href="https://github.com/JaderoChan" target="_blank" rel="noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.071 1.531 1.031 1.531 1.031.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.203 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg>
+              github.com/JaderoChan
+            </a>
+            <a id="emailLink" href="#">Email</a>
+            <span class="badge status-badge zh">🟢 求职中</span>
+            <span class="badge status-badge en lang-hidden">🟢 Open to Work</span>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="stats">
-        <h2 class="zh">GitHub 统计</h2>
-        <h2 class="en lang-hidden">GitHub Stats</h2>
-        <div class="stats-grid" id="statsGrid"></div>
-      </section>
+    <section id="stats">
+      <h2 class="zh">GitHub 统计</h2>
+      <h2 class="en lang-hidden">GitHub Stats</h2>
+      <div class="stats-grid" id="statsGrid"></div>
+    </section>
 
-      <section id="projects">
-        <h2 class="zh">精选项目</h2>
-        <h2 class="en lang-hidden">Featured Projects</h2>
-        <div class="project-list" id="projectList"></div>
-      </section>
-    </div>
-
-    <div class="page page-hidden" data-page="my-base">
-      <section class="subpage-hero">
-        <p class="eyebrow">Knowledge Hub</p>
-        <h1 class="title title-small"><span class="zh">基</span><span class="en lang-hidden">Base</span></h1>
-      </section>
-
-      <section>
-        <div class="module-nav" id="myBaseModuleNav"></div>
-      </section>
-
-      <section id="myBaseContent">
-        <p class="readme-loading zh">Base 页面加载中...</p>
-        <p class="readme-loading en lang-hidden">Loading Base...</p>
-      </section>
-    </div>
+    <section id="projects">
+      <h2 class="zh">精选项目</h2>
+      <h2 class="en lang-hidden">Featured Projects</h2>
+      <div class="project-list" id="projectList"></div>
+    </section>
   </main>
 
   <footer class="container">

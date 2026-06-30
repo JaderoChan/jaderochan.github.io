@@ -2,10 +2,13 @@ const GITHUB_USER = 'JaderoChan';
 const CONTACT_EMAIL = 'c_dl_cn@outlook.com';
 const API = 'https://api.github.com';
 const MY_BASE_REPO = 'MyBase';
-const README_PATH_CANDIDATES = {
-  zh: ['README_ZH.md', 'doc/README_ZH.md', 'docs/README_ZH.md'],
-  en: ['README_EN.md', 'doc/README_EN.md', 'docs/README_EN.md'],
-  fallback: ['README.md']
+const ICONS = {
+  repos: './assets/repos.png',
+  people: './assets/people.png',
+  commit: './assets/commit.png',
+  star: './assets/star.png',
+  fork: './assets/fork.png',
+  email: './assets/email.png'
 };
 
 const featuredProjects = [
@@ -163,9 +166,8 @@ const myBaseModuleMap = Object.fromEntries(myBaseModules.map((module) => [module
 
 const state = {
   lang: localStorage.getItem('lang') || 'zh',
-  theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'),
-  route: parseHashRoute(window.location.hash),
-  myBasePreviewItem: null
+  theme: 'dark',
+  route: parseHashRoute(window.location.hash)
 };
 
 let cachedUser = null;
@@ -321,30 +323,6 @@ function hashText(text) {
   return (hash >>> 0).toString(16);
 }
 
-function normalizeRepoPath(path) {
-  return String(path || '').replace(/^\/+/, '').toLowerCase();
-}
-
-function pickPreferredReadmePath(paths, lang) {
-  if (!Array.isArray(paths) || !paths.length) return null;
-
-  const pathMap = new Map(paths.map((path) => [normalizeRepoPath(path), path]));
-  const orderedCandidates = lang === 'zh'
-    ? [...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.fallback]
-    : [...README_PATH_CANDIDATES.en, ...README_PATH_CANDIDATES.zh, ...README_PATH_CANDIDATES.fallback];
-
-  for (const candidate of orderedCandidates) {
-    const matched = pathMap.get(normalizeRepoPath(candidate));
-    if (matched) return matched;
-  }
-
-  return paths.find((path) => /^readme(\..+)?$/i.test((path.split('/').pop() || '').trim())) || null;
-}
-
-function isFallbackReadmePath(path) {
-  return README_PATH_CANDIDATES.fallback.some((candidate) => normalizeRepoPath(candidate) === normalizeRepoPath(path));
-}
-
 function splitTargetSuffix(target) {
   const queryIndex = target.indexOf('?');
   const hashIndex = target.indexOf('#');
@@ -479,28 +457,6 @@ async function renderGitHubMarkdown(markdown, repo, doc) {
 async function resolveReadmePath(repo, lang) {
   const cacheKey = `${repo}:${lang}`;
   if (cacheKey in cachedReadmePathMap) return cachedReadmePathMap[cacheKey];
-
-  const readmePaths = [];
-  for (const dir of ['', 'doc', 'docs']) {
-    const suffix = dir ? `/${encodeContentPath(dir)}` : '';
-    const entries = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/contents${suffix}`);
-    if (!Array.isArray(entries)) continue;
-
-    entries
-      .filter((item) => item?.type === 'file' && /^readme(\..+)?$/i.test(item.name || ''))
-      .forEach((item) => {
-        if (item.path) readmePaths.push(item.path);
-      });
-
-    const preferred = pickPreferredReadmePath(readmePaths, lang);
-    if (preferred && (dir !== '' || !isFallbackReadmePath(preferred))) break;
-  }
-
-  const preferredPath = pickPreferredReadmePath(readmePaths, lang);
-  if (preferredPath) {
-    cachedReadmePathMap[cacheKey] = { path: preferredPath, htmlUrl: null };
-    return cachedReadmePathMap[cacheKey];
-  }
 
   const defaultReadme = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/readme`);
   if (defaultReadme?.type === 'file' && defaultReadme?.path) {
@@ -667,16 +623,16 @@ function renderStats() {
   const totalForks = featuredProjects.reduce((sum, project) => sum + (cachedRepoMap[project.repo]?.forks_count || 0), 0);
 
   const tiles = [
-    { icon: '📦', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos' },
-    { icon: '🧑‍🤝‍🧑', val: fmt(cachedUser?.followers), label: isZh ? '关注者' : 'Followers' },
-    { icon: '📅', val: fmt(cachedLastYearCommits), label: isZh ? '近一年提交' : 'Last Year Commits' },
-    { icon: '⭐', val: fmt(totalStars), label: isZh ? '精选星标' : 'Featured Stars' },
-    { icon: '🔀', val: fmt(totalForks), label: 'Forks' }
+    { icon: ICONS.repos, iconAlt: isZh ? '仓库图标' : 'repos icon', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos' },
+    { icon: ICONS.people, iconAlt: isZh ? '用户图标' : 'people icon', val: fmt(cachedUser?.followers), label: isZh ? '关注者' : 'Followers' },
+    { icon: ICONS.commit, iconAlt: isZh ? '提交图标' : 'commit icon', val: fmt(cachedLastYearCommits), label: isZh ? '近一年提交' : 'Last Year Commits' },
+    { icon: ICONS.star, iconAlt: isZh ? '星标图标' : 'star icon', val: fmt(totalStars), label: isZh ? '精选星标' : 'Featured Stars' },
+    { icon: ICONS.fork, iconAlt: isZh ? '分叉图标' : 'fork icon', val: fmt(totalForks), label: 'Forks' }
   ];
 
   grid.innerHTML = tiles.map((tile) => `
     <div class="stat-tile">
-      <span class="stat-icon">${tile.icon}</span>
+      <span class="stat-icon"><img class="icon-img" src="${tile.icon}" alt="${tile.iconAlt}" loading="lazy" /></span>
       <span class="stat-value">${tile.val}</span>
       <span class="stat-label">${tile.label}</span>
     </div>
@@ -717,9 +673,9 @@ function renderProjects() {
           <div class="project-meta-row">
             ${languageBadge}
             ${versionBadge}
-            <span class="badge">⭐ ${stars}</span>
-            <span class="badge">🔀 ${forkLabel} ${forks}</span>
-            <span class="badge">🧾 ${commits} ${commitLabel}</span>
+            <span class="badge"><img class="icon-img" src="${ICONS.star}" alt="${isZh ? '星标图标' : 'star icon'}" loading="lazy" /> ${stars}</span>
+            <span class="badge"><img class="icon-img" src="${ICONS.fork}" alt="${isZh ? '分叉图标' : 'fork icon'}" loading="lazy" /> ${forkLabel} ${forks}</span>
+            <span class="badge"><img class="icon-img" src="${ICONS.commit}" alt="${isZh ? '提交图标' : 'commit icon'}" loading="lazy" /> ${commits} ${commitLabel}</span>
           </div>
           <details class="readme-details" data-readme-repo="${project.repo}">
             <summary>${readmeTitle}</summary>
@@ -780,58 +736,12 @@ function bindReadmeDetails() {
   });
 }
 
-function renderMyBaseModuleNav() {
-  const nav = document.getElementById('myBaseModuleNav');
-  if (!nav) return;
-
-  nav.innerHTML = myBaseModules.map((module) => {
-    const label = labelForModule(module);
-    if (module.key === 'writings') {
-      const activeClass = state.route.detail === 'writings' ? ' module-chip-active' : '';
-      return `<a class="module-chip${activeClass}" href="#my-base/writings">${module.icon} ${escapeHtml(label)}</a>`;
-    }
-
-    return `<button class="module-chip" type="button" data-scroll-target="mybase-module-${module.key}">${module.icon} ${escapeHtml(label)}</button>`;
-  }).join('');
-
-  nav.querySelectorAll('[data-scroll-target]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const targetId = button.getAttribute('data-scroll-target');
-      const target = targetId ? document.getElementById(targetId) : null;
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-}
-
 function renderMyBaseItem(item) {
   const nestedHtml = item.nestedNames.length
     ? `<div class="module-item-subitems">${item.nestedNames.map((name) => `<span class="module-subitem">${escapeHtml(name)}</span>`).join('')}</div>`
     : '';
   const previewBadge = item.previewType ? `<span class="badge">${escapeHtml(describeEntryType(item))}</span>` : '';
   const nestedBadge = item.nestedCount ? `<span class="badge">${item.nestedCount} ${state.lang === 'zh' ? '项' : 'items'}</span>` : '';
-
-  if (item.previewType) {
-    return `
-      <button
-        type="button"
-        class="module-item-link"
-        data-preview-path="${escapeHtml(item.path)}"
-        data-preview-type="${escapeHtml(item.previewType)}"
-        data-preview-title="${escapeHtml(item.name)}"
-        data-preview-url="${escapeHtml(item.htmlUrl)}"
-      >
-        <div class="module-item-top">
-          <span class="module-item-title">${escapeHtml(item.name)}</span>
-          <span class="badge">${state.lang === 'zh' ? '打开预览' : 'Open Preview'}</span>
-        </div>
-        <div class="module-item-meta">
-          ${previewBadge}
-          ${nestedBadge}
-        </div>
-        ${nestedHtml}
-      </button>
-    `;
-  }
 
   return `
     <a class="module-item-link" href="${sanitizeExternalUrl(item.htmlUrl)}" target="_blank" rel="noreferrer">
@@ -850,11 +760,7 @@ function renderMyBaseItem(item) {
 
 function renderMyBaseOverview(structure) {
   const isZh = state.lang === 'zh';
-  const repo = structure.repo || {};
-  const totalItems = structure.modules.reduce((sum, module) => sum + module.items.length, 0);
-  const overviewTitle = isZh ? 'Base 总览' : 'Base Overview';
   const sourceLabel = isZh ? '查看仓库' : 'Open Repository';
-  const updatedLabel = isZh ? '最近更新' : 'Last Updated';
   const moduleCards = structure.modules.map((module) => {
     const cardId = `mybase-module-${module.key}`;
     const cardTitle = labelForModule(module);
@@ -886,33 +792,8 @@ function renderMyBaseOverview(structure) {
 
   return `
     <div class="my-base-layout">
-      <article class="overview-card">
-        <h2>${overviewTitle}</h2>
-        <div class="overview-meta">
-          <span class="badge">⭐ ${fmt(repo.stargazers_count)}</span>
-          <span class="badge">🔀 ${fmt(repo.forks_count)}</span>
-          <span class="badge">📦 ${structure.modules.length} ${isZh ? '分类' : 'modules'}</span>
-          <span class="badge">🧾 ${totalItems} ${isZh ? '公开条目' : 'public items'}</span>
-          <span class="badge">🕒 ${updatedLabel}: ${formatDate(repo.updated_at)}</span>
-        </div>
-      </article>
       <div class="module-grid">
         ${moduleCards}
-      </div>
-      <section class="preview-panel" id="myBasePreviewPanel">
-        ${renderPreviewPlaceholder()}
-      </section>
-    </div>
-  `;
-}
-
-function renderPreviewPlaceholder() {
-  const isZh = state.lang === 'zh';
-  return `
-    <div class="preview-placeholder">
-      <div>
-        <strong>${isZh ? '选择一个条目进行预览' : 'Select an item to preview'}</strong>
-        <p class="preview-placeholder-text">${isZh ? '支持直接预览 Markdown 文档与常见脚本/文本文件。' : 'Markdown documents and common script/text files can be previewed here.'}</p>
       </div>
     </div>
   `;
@@ -944,7 +825,6 @@ async function renderMyBaseContent() {
   if (!container || state.route.page !== 'my-base') return;
 
   container.innerHTML = `<p class="readme-loading">${state.lang === 'zh' ? 'Base 页面加载中...' : 'Loading Base...'}</p>`;
-  renderMyBaseModuleNav();
 
   if (state.route.detail === 'writings') {
     container.innerHTML = renderWritingsEmptyState();
@@ -954,68 +834,6 @@ async function renderMyBaseContent() {
   const structure = await loadMyBaseStructure();
 
   container.innerHTML = renderMyBaseOverview(structure);
-  bindMyBasePreviewButtons();
-  await renderMyBasePreview();
-}
-
-function bindMyBasePreviewButtons() {
-  document.querySelectorAll('[data-preview-path]').forEach((button) => {
-    button.addEventListener('click', () => {
-      state.myBasePreviewItem = {
-        path: button.getAttribute('data-preview-path') || '',
-        type: button.getAttribute('data-preview-type') || '',
-        title: button.getAttribute('data-preview-title') || '',
-        htmlUrl: button.getAttribute('data-preview-url') || ''
-      };
-      void renderMyBasePreview();
-    });
-  });
-}
-
-async function renderMyBasePreview() {
-  const panel = document.getElementById('myBasePreviewPanel');
-  if (!panel) return;
-  if (!state.myBasePreviewItem) {
-    panel.innerHTML = renderPreviewPlaceholder();
-    return;
-  }
-
-  const isZh = state.lang === 'zh';
-  const loadingText = isZh ? '预览加载中...' : 'Loading preview...';
-  const failedText = isZh ? '预览加载失败，请稍后重试。' : 'Failed to load preview. Please try again.';
-  const sourceText = isZh ? '查看源码' : 'View source';
-
-  panel.innerHTML = `<p class="readme-loading">${loadingText}</p>`;
-  const file = await getRepoContent(MY_BASE_REPO, state.myBasePreviewItem.path);
-  if (!file || typeof file !== 'object' || !('content' in file)) {
-    panel.innerHTML = `<p class="readme-loading">${failedText}</p>`;
-    return;
-  }
-
-  const decoded = decodeBase64Utf8(file.content || '');
-  const doc = {
-    path: file.path || state.myBasePreviewItem.path,
-    htmlUrl: file.html_url || state.myBasePreviewItem.htmlUrl,
-    sha: file.sha || ''
-  };
-  const renderedBody = state.myBasePreviewItem.type === 'markdown'
-    ? `<div class="preview-rendered">${await renderGitHubMarkdown(decoded, MY_BASE_REPO, doc)}</div>`
-    : `<pre class="preview-code"><code>${escapeHtml(decoded)}</code></pre>`;
-
-  panel.innerHTML = `
-    <div class="preview-header">
-      <div>
-        <h3 class="preview-title">${escapeHtml(state.myBasePreviewItem.title)}</h3>
-        <p class="preview-subtitle">${escapeHtml(doc.path)}</p>
-      </div>
-      <div class="preview-actions">
-        <a class="preview-source" href="${sanitizeExternalUrl(doc.htmlUrl)}" target="_blank" rel="noreferrer">${sourceText}</a>
-      </div>
-    </div>
-    <div class="preview-body">
-      ${renderedBody}
-    </div>
-  `;
 }
 
 function updatePageVisibility() {
@@ -1041,7 +859,6 @@ function renderAll() {
   updatePageVisibility();
   renderStats();
   renderProjects();
-  renderMyBaseModuleNav();
   void renderMyBaseContent();
 }
 
@@ -1080,28 +897,21 @@ function setLang(lang) {
   renderAll();
 }
 
-function setTheme(theme) {
-  state.theme = theme;
-  localStorage.setItem('theme', theme);
-  document.documentElement.setAttribute('data-theme', theme);
-}
-
 function setupEmail() {
   const emailLink = document.getElementById('emailLink');
   if (!emailLink) return;
   emailLink.href = `mailto:${CONTACT_EMAIL}`;
-  emailLink.textContent = `📧 ${CONTACT_EMAIL}`;
+  emailLink.innerHTML = `<img class="icon-img" src="${ICONS.email}" alt="email icon" /> ${CONTACT_EMAIL}`;
 }
 
 document.getElementById('langBtn').addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
-document.getElementById('themeBtn').addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
 window.addEventListener('hashchange', () => {
   state.route = parseHashRoute(window.location.hash);
   renderAll();
 });
 
-setTheme(state.theme);
+document.documentElement.setAttribute('data-theme', 'dark');
 setLang(state.lang);
 setupEmail();
 
@@ -1110,7 +920,7 @@ document.getElementById('year').textContent = currentYear;
 document.getElementById('year2').textContent = currentYear;
 
 if (!window.location.hash) {
-  window.location.hash = '#home';
+  window.location.hash = document.getElementById('myBaseContent') ? '#my-base' : '#home';
 }
 
 loadData();
