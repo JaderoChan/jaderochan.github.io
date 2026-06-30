@@ -204,6 +204,66 @@ h2 { margin: 0 0 18px; font-size: 24px; }
 .project-body h3 a:hover { color: var(--brand); }
 .project-desc { color: var(--text-soft); font-size: 14px; margin: 0 0 12px; }
 .project-meta-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+.readme-details {
+  margin-top: 12px;
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+}
+.readme-details summary {
+  cursor: pointer;
+  color: var(--brand);
+  font-size: 13px;
+  user-select: none;
+}
+.readme-panel {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-soft) 75%, transparent);
+  padding: 12px;
+  max-height: 360px;
+  overflow: auto;
+}
+.readme-loading {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+.readme-source {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.readme-source a {
+  color: var(--brand);
+  text-decoration: none;
+}
+.readme-source a:hover {
+  text-decoration: underline;
+}
+.readme-content {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+.readme-content h1,
+.readme-content h2,
+.readme-content h3,
+.readme-content h4 {
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.readme-content p,
+.readme-content ul {
+  margin: 0 0 8px;
+}
+.readme-content pre {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 10px;
+  overflow-x: auto;
+}
+.readme-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
 .project-screenshot-wrap { flex-shrink: 0; width: 200px; }
 
 .project-screenshot {
