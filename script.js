@@ -289,6 +289,15 @@ function decodeBase64Utf8(base64) {
   }
 }
 
+function hashText(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
 function normalizeRepoPath(path) {
   return String(path || '').replace(/^\/+/, '').toLowerCase();
 }
@@ -418,7 +427,8 @@ function rewriteRenderedMarkdownUrls(html, repo, doc) {
 }
 
 async function renderGitHubMarkdown(markdown, repo, doc) {
-  const cacheKey = `${state.lang}:${repo}:${doc.path}:${doc.sha || String(markdown || '')}`;
+  const markdownKey = doc.sha || hashText(String(markdown || ''));
+  const cacheKey = `${state.lang}:${repo}:${doc.path}:${markdownKey}`;
   if (cacheKey in cachedRenderedMarkdownMap) return cachedRenderedMarkdownMap[cacheKey];
 
   const rendered = await apiFetchText(`${API}/markdown`, {
@@ -625,9 +635,9 @@ async function loadMyBaseStructure() {
 }
 
 async function loadMyBaseOverviewHtml() {
-  const cacheKey = state.lang;
-  if (cacheKey in cachedMyBaseOverviewHtmlMap) return cachedMyBaseOverviewHtmlMap[cacheKey];
   const readmeDoc = await getReadmeDoc(MY_BASE_REPO, state.lang);
+  const cacheKey = readmeDoc ? `${state.lang}:${readmeDoc.path}:${readmeDoc.sha || ''}` : `${state.lang}:missing`;
+  if (cacheKey in cachedMyBaseOverviewHtmlMap) return cachedMyBaseOverviewHtmlMap[cacheKey];
   if (!readmeDoc) {
     cachedMyBaseOverviewHtmlMap[cacheKey] = '';
     return cachedMyBaseOverviewHtmlMap[cacheKey];
