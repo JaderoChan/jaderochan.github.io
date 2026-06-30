@@ -1,30 +1,14 @@
 const GITHUB_USER = 'JaderoChan';
 const CONTACT_EMAIL = 'c_dl_cn@outlook.com';
 const API = 'https://api.github.com';
+const MY_BASE_REPO = 'MyBase';
 const README_PATH_CANDIDATES = {
-  zh: [
-    'README_ZH.md',
-    'doc/README_ZH.md',
-    'docs/README_ZH.md'
-  ],
-  en: [
-    'README_EN.md',
-    'doc/README_EN.md',
-    'docs/README_EN.md'
-  ],
+  zh: ['README_ZH.md', 'doc/README_ZH.md', 'docs/README_ZH.md'],
+  en: ['README_EN.md', 'doc/README_EN.md', 'docs/README_EN.md'],
   fallback: ['README.md']
 };
 
-const projects = [
-  {
-    display: 'My Base',
-    repo: 'MyBase',
-    url: 'https://github.com/JaderoChan/MyBase',
-    lang: 'Batchfile',
-    zh: '个人知识与工程资产的集合仓库，集中维护 references、standards、skills、templates、scripts 等目录，涵盖速查资料、编码规范、AI Skill、项目模板与常用脚本，作为长期迭代的开发工作台。项目强调知识沉淀与可复用实践，便于在新项目中快速复刻统一工程流程，也作为日常开发流程标准化的核心基座。',
-    en: 'A collection-style personal engineering base that consolidates references, standards, skills, templates, and scripts, serving as an evolving workspace for cheatsheets, coding conventions, AI skills, reusable project templates, and utility automation. It focuses on turning day-to-day experience into reusable assets that can quickly bootstrap future projects, while acting as the central baseline for standardized daily engineering workflows.',
-    screenshot: null
-  },
+const featuredProjects = [
   {
     display: 'HID Tool',
     repo: 'hidtool',
@@ -99,9 +83,73 @@ const projects = [
   }
 ];
 
+const myBaseModules = [
+  {
+    key: 'references',
+    icon: '📚',
+    zh: '参考资料',
+    en: 'References',
+    descZh: '收集速查表、对比表与常用知识资料。',
+    descEn: 'Collected cheatsheets, comparisons, and frequently reused references.'
+  },
+  {
+    key: 'standards',
+    icon: '📏',
+    zh: '规范标准',
+    en: 'Standards',
+    descZh: '个人工程规范、排版准则与内容约束。',
+    descEn: 'Personal engineering rules, formatting standards, and content conventions.'
+  },
+  {
+    key: 'skills',
+    icon: '🤖',
+    zh: 'AI Skills',
+    en: 'AI Skills',
+    descZh: '给 AI 使用的约束与指引文档。',
+    descEn: 'Skill documents used to constrain and guide AI workflows.'
+  },
+  {
+    key: 'templates',
+    icon: '📋',
+    zh: '模板',
+    en: 'Templates',
+    descZh: '文件模板与工程脚手架模板。',
+    descEn: 'Reusable file templates and project scaffolding templates.'
+  },
+  {
+    key: 'scripts',
+    icon: '🔧',
+    zh: '脚本',
+    en: 'Scripts',
+    descZh: '常用自动化脚本与工具脚本。',
+    descEn: 'Utility and automation scripts used in day-to-day work.'
+  },
+  {
+    key: 'others',
+    icon: '🗂️',
+    zh: '其他',
+    en: 'Others',
+    descZh: '暂不归类但保留的其他内容。',
+    descEn: 'Other retained materials that do not belong to the main groups yet.'
+  },
+  {
+    key: 'writings',
+    icon: '✍️',
+    zh: '文稿随记',
+    en: 'Writings',
+    descZh: '当前只保留入口，页面会提示内容暂为空。',
+    descEn: 'Currently kept as an entry only, with an empty-state page for now.',
+    virtual: true
+  }
+];
+
+const myBaseModuleMap = Object.fromEntries(myBaseModules.map((module) => [module.key, module]));
+
 const state = {
   lang: localStorage.getItem('lang') || 'zh',
-  theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+  theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'),
+  route: parseHashRoute(window.location.hash),
+  myBasePreviewItem: null
 };
 
 let cachedUser = null;
@@ -111,28 +159,76 @@ let cachedReleases = {};
 let cachedLastYearCommits = null;
 let cachedReadmePathMap = {};
 let cachedReadmeDocMap = {};
+let cachedRenderedMarkdownMap = {};
+let cachedRepoContentMap = {};
+let cachedMyBaseStructure = null;
+let cachedMyBaseOverviewHtmlMap = {};
 
-async function apiFetch(url) {
+function parseHashRoute(hash) {
+  const cleaned = String(hash || '').replace(/^#/, '').trim();
+  if (!cleaned || cleaned === 'home') return { page: 'home', detail: '' };
+  if (cleaned === 'my-base') return { page: 'my-base', detail: '' };
+  if (cleaned.startsWith('my-base/')) {
+    return {
+      page: 'my-base',
+      detail: decodeURIComponent(cleaned.slice('my-base/'.length))
+    };
+  }
+  return { page: 'home', detail: '' };
+}
+
+function routeToHash(route) {
+  if (route.page === 'my-base' && route.detail) return `#my-base/${encodeURIComponent(route.detail)}`;
+  if (route.page === 'my-base') return '#my-base';
+  return '#home';
+}
+
+function mergeHeaders(defaultHeaders, customHeaders) {
+  return { ...defaultHeaders, ...(customHeaders || {}) };
+}
+
+async function apiFetchJson(url, options = {}) {
   try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
+    const response = await fetch(url, {
+      ...options,
+      headers: mergeHeaders({ Accept: 'application/vnd.github+json' }, options.headers)
+    });
+    if (!response.ok) {
+      console.warn('GitHub JSON fetch failed:', response.status, url);
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    console.warn('GitHub JSON fetch error:', url, error);
+    return null;
+  }
+}
+
+async function apiFetchText(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      console.warn('Text fetch failed:', response.status, url);
+      return null;
+    }
+    return await response.text();
+  } catch (error) {
+    console.warn('Text fetch error:', url, error);
     return null;
   }
 }
 
 async function getCommitCount(repo) {
   try {
-    const res = await fetch(`${API}/repos/${GITHUB_USER}/${repo}/commits?per_page=1`);
-    if (!res.ok) return null;
-    const link = res.headers.get('Link');
+    const response = await fetch(`${API}/repos/${GITHUB_USER}/${repo}/commits?per_page=1`);
+    if (!response.ok) return null;
+    const link = response.headers.get('Link');
     if (!link) {
-      const data = await res.json();
+      const data = await response.json();
       return Array.isArray(data) ? data.length : null;
     }
-    const m = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
-    return m ? parseInt(m[1], 10) : 1;
+    const match = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
+    return match ? parseInt(match[1], 10) : 1;
   } catch {
     return null;
   }
@@ -148,25 +244,58 @@ async function getLastYearCommitCount() {
     const safeDay = Math.min(targetDay, maxDayInTargetMonth);
     const sinceDate = new Date(Date.UTC(targetYear, targetMonth, safeDay)).toISOString().slice(0, 10);
     const query = encodeURIComponent(`author:${GITHUB_USER} committer-date:>=${sinceDate}`);
-    const res = await fetch(`${API}/search/commits?q=${query}&per_page=1`, {
+    const response = await fetch(`${API}/search/commits?q=${query}&per_page=1`, {
       headers: { Accept: 'application/vnd.github+json' }
     });
-    if (!res.ok) return null;
-    const data = await res.json();
+    if (!response.ok) return null;
+    const data = await response.json();
     return typeof data?.total_count === 'number' ? data.total_count : null;
   } catch {
     return null;
   }
 }
 
-function fmt(n) {
-  if (n === null || n === undefined) return '—';
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
-  return String(n);
+function fmt(value) {
+  if (value === null || value === undefined) return '—';
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+  return String(value);
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function encodeContentPath(path) {
-  return path.split('/').map((part) => encodeURIComponent(part)).join('/');
+  return String(path || '').split('/').map((part) => encodeURIComponent(part)).join('/');
+}
+
+function encodeRepoPath(path) {
+  return String(path || '').split('/').filter(Boolean).map((part) => encodeURIComponent(part)).join('/');
+}
+
+function decodeBase64Utf8(base64) {
+  try {
+    const clean = String(base64 || '').replace(/\n/g, '');
+    const binary = atob(clean);
+    const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch {
+    return '';
+  }
+}
+
+function hashText(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
 }
 
 function normalizeRepoPath(path) {
@@ -193,111 +322,135 @@ function isFallbackReadmePath(path) {
   return README_PATH_CANDIDATES.fallback.some((candidate) => normalizeRepoPath(candidate) === normalizeRepoPath(path));
 }
 
-function decodeBase64Utf8(base64) {
-  try {
-    const clean = (base64 || '').replace(/\n/g, '');
-    const binary = atob(clean);
-    const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
-    return new TextDecoder('utf-8').decode(bytes);
-  } catch {
-    return '';
-  }
+function splitTargetSuffix(target) {
+  const queryIndex = target.indexOf('?');
+  const hashIndex = target.indexOf('#');
+  const indexes = [queryIndex, hashIndex].filter((value) => value >= 0);
+  const cutIndex = indexes.length ? Math.min(...indexes) : -1;
+  return cutIndex >= 0
+    ? { pathPart: target.slice(0, cutIndex), suffix: target.slice(cutIndex) }
+    : { pathPart: target, suffix: '' };
 }
 
-function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+function isAbsoluteUrl(target) {
+  return /^[a-z][a-z\d+\-.]*:/i.test(target);
 }
 
-function sanitizeUrl(url) {
+function sanitizeExternalUrl(url, allowMail = true) {
+  if (!url) return '#';
   try {
     const parsed = new URL(url, window.location.origin);
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.toString();
-    return '#';
+    const protocols = allowMail ? ['http:', 'https:', 'mailto:', 'tel:'] : ['http:', 'https:'];
+    return protocols.includes(parsed.protocol) ? parsed.toString() : '#';
   } catch {
     return '#';
   }
 }
 
-function formatInlineMarkdown(text) {
-  let safe = escapeHtml(text || '');
-  safe = safe.replace(/`([^`]+)`/g, '<code>$1</code>');
-  safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  safe = safe.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-  return safe;
+function resolveRepoRelativePath(basePath, targetPath) {
+  const sourceParts = String(basePath || '').split('/');
+  sourceParts.pop();
+
+  const rawParts = targetPath.startsWith('/')
+    ? targetPath.replace(/^\/+/, '').split('/')
+    : [...sourceParts, ...targetPath.split('/')];
+
+  const resolvedParts = [];
+  for (const part of rawParts) {
+    if (!part || part === '.') continue;
+    if (part === '..') {
+      if (resolvedParts.length) resolvedParts.pop();
+      continue;
+    }
+    resolvedParts.push(part);
+  }
+  return resolvedParts.join('/');
 }
 
-function renderMarkdown(md) {
-  const lines = String(md || '').replace(/\r\n/g, '\n').split('\n');
-  let html = '';
-  let inCode = false;
-  let codeLines = [];
-  let inList = false;
+function extractBranchFromHtmlUrl(htmlUrl, repo) {
+  const match = String(htmlUrl || '').match(/\/blob\/([^/]+)\//);
+  return match ? decodeURIComponent(match[1]) : (cachedRepoMap[repo]?.default_branch || 'main');
+}
 
-  const closeList = () => {
-    if (!inList) return;
-    html += '</ul>';
-    inList = false;
-  };
+function rewriteRenderedMarkdownUrls(html, repo, doc) {
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(`<div>${html || ''}</div>`, 'text/html');
+  const wrapper = parsed.body.firstElementChild;
+  if (!wrapper) return '';
 
-  const closeCode = () => {
-    if (!inCode) return;
-    html += `<pre><code>${codeLines.join('\n')}</code></pre>`;
-    inCode = false;
-    codeLines = [];
-  };
+  const branch = extractBranchFromHtmlUrl(doc.htmlUrl, repo);
+  const currentPath = doc.path;
 
-  for (const rawLine of lines) {
-    if (rawLine.trim().startsWith('```')) {
-      closeList();
-      if (!inCode) {
-        inCode = true;
-        codeLines = [];
-      } else {
-        closeCode();
+  wrapper.querySelectorAll('script, iframe, object, embed, form').forEach((element) => element.remove());
+  wrapper.querySelectorAll('*').forEach((element) => {
+    [...element.attributes].forEach((attribute) => {
+      if (/^on/i.test(attribute.name) || attribute.name === 'srcdoc') {
+        element.removeAttribute(attribute.name);
       }
-      continue;
+    });
+  });
+
+  wrapper.querySelectorAll('a[href]').forEach((link) => {
+    const href = link.getAttribute('href') || '';
+    if (!href) return;
+    if (href.startsWith('#')) return;
+    if (isAbsoluteUrl(href)) {
+      link.setAttribute('href', sanitizeExternalUrl(href, true));
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noreferrer');
+      return;
     }
 
-    if (inCode) {
-      codeLines.push(escapeHtml(rawLine));
-      continue;
+    const { pathPart, suffix } = splitTargetSuffix(href);
+    const resolvedPath = resolveRepoRelativePath(currentPath, pathPart);
+    const safeHref = `https://github.com/${GITHUB_USER}/${repo}/blob/${encodeURIComponent(branch)}/${encodeRepoPath(resolvedPath)}${suffix}`;
+    link.setAttribute('href', safeHref);
+    link.setAttribute('target', '_blank');
+    link.setAttribute('rel', 'noreferrer');
+  });
+
+  wrapper.querySelectorAll('img[src]').forEach((image) => {
+    const src = image.getAttribute('src') || '';
+    if (!src) return;
+    if (isAbsoluteUrl(src)) {
+      image.setAttribute('src', sanitizeExternalUrl(src, false));
+      return;
     }
 
-    const heading = rawLine.match(/^(#{1,6})\s+(.*)$/);
-    if (heading) {
-      closeList();
-      const level = heading[1].length;
-      html += `<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`;
-      continue;
-    }
+    const { pathPart, suffix } = splitTargetSuffix(src);
+    const resolvedPath = resolveRepoRelativePath(currentPath, pathPart);
+    const safeSrc = `https://raw.githubusercontent.com/${GITHUB_USER}/${repo}/${encodeURIComponent(branch)}/${encodeRepoPath(resolvedPath)}${suffix}`;
+    image.setAttribute('src', safeSrc);
+  });
 
-    const listItem = rawLine.match(/^\s*-\s+(.*)$/);
-    if (listItem) {
-      if (!inList) {
-        html += '<ul>';
-        inList = true;
-      }
-      html += `<li>${formatInlineMarkdown(listItem[1])}</li>`;
-      continue;
-    }
+  return wrapper.innerHTML;
+}
 
-    if (!rawLine.trim()) {
-      closeList();
-      continue;
-    }
+async function renderGitHubMarkdown(markdown, repo, doc) {
+  const markdownKey = doc.sha || hashText(String(markdown || ''));
+  const cacheKey = `${state.lang}:${repo}:${doc.path}:${markdownKey}`;
+  if (cacheKey in cachedRenderedMarkdownMap) return cachedRenderedMarkdownMap[cacheKey];
 
-    closeList();
-    html += `<p>${formatInlineMarkdown(rawLine)}</p>`;
+  const rendered = await apiFetchText(`${API}/markdown`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'text/html'
+    },
+    body: JSON.stringify({
+      text: String(markdown || ''),
+      mode: 'gfm',
+      context: `${GITHUB_USER}/${repo}`
+    })
+  });
+
+  if (!rendered) {
+    cachedRenderedMarkdownMap[cacheKey] = `<pre><code>${escapeHtml(markdown)}</code></pre>`;
+    return cachedRenderedMarkdownMap[cacheKey];
   }
 
-  closeList();
-  closeCode();
-  return html;
+  cachedRenderedMarkdownMap[cacheKey] = rewriteRenderedMarkdownUrls(rendered, repo, doc);
+  return cachedRenderedMarkdownMap[cacheKey];
 }
 
 async function resolveReadmePath(repo, lang) {
@@ -307,8 +460,9 @@ async function resolveReadmePath(repo, lang) {
   const readmePaths = [];
   for (const dir of ['', 'doc', 'docs']) {
     const suffix = dir ? `/${encodeContentPath(dir)}` : '';
-    const entries = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/contents${suffix}`);
+    const entries = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/contents${suffix}`);
     if (!Array.isArray(entries)) continue;
+
     entries
       .filter((item) => item?.type === 'file' && /^readme(\..+)?$/i.test(item.name || ''))
       .forEach((item) => {
@@ -321,14 +475,11 @@ async function resolveReadmePath(repo, lang) {
 
   const preferredPath = pickPreferredReadmePath(readmePaths, lang);
   if (preferredPath) {
-    cachedReadmePathMap[cacheKey] = {
-      path: preferredPath,
-      htmlUrl: null
-    };
+    cachedReadmePathMap[cacheKey] = { path: preferredPath, htmlUrl: null };
     return cachedReadmePathMap[cacheKey];
   }
 
-  const defaultReadme = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/readme`);
+  const defaultReadme = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/readme`);
   if (defaultReadme?.type === 'file' && defaultReadme?.path) {
     cachedReadmePathMap[cacheKey] = {
       path: defaultReadme.path,
@@ -351,31 +502,157 @@ async function getReadmeDoc(repo, lang) {
     return null;
   }
 
-  const data = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/contents/${encodeContentPath(readmePath.path)}`);
+  const data = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/contents/${encodeContentPath(readmePath.path)}`);
   if (!data?.content) {
     cachedReadmeDocMap[cacheKey] = null;
     return null;
   }
 
   cachedReadmeDocMap[cacheKey] = {
+    repo,
     markdown: decodeBase64Utf8(data.content),
     htmlUrl: data.html_url || readmePath.htmlUrl,
-    path: readmePath.path
+    path: readmePath.path,
+    sha: data.sha || ''
   };
   return cachedReadmeDocMap[cacheKey];
 }
 
+async function getRepoContent(repo, path = '') {
+  const cacheKey = `${repo}:${path}`;
+  if (cacheKey in cachedRepoContentMap) return cachedRepoContentMap[cacheKey];
+
+  const endpoint = path
+    ? `${API}/repos/${GITHUB_USER}/${repo}/contents/${encodeContentPath(path)}`
+    : `${API}/repos/${GITHUB_USER}/${repo}/contents`;
+  const data = await apiFetchJson(endpoint);
+  cachedRepoContentMap[cacheKey] = data;
+  return data;
+}
+
 async function getLatestReleaseTag(repo) {
-  const data = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/releases/latest`);
+  const data = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/releases/latest`);
   return data?.tag_name || null;
+}
+
+function labelForModule(module) {
+  return state.lang === 'zh' ? module.zh : module.en;
+}
+
+function descForModule(module) {
+  return state.lang === 'zh' ? module.descZh : module.descEn;
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '—';
+  try {
+    return new Date(dateString).toLocaleDateString(state.lang === 'zh' ? 'zh-CN' : 'en-US');
+  } catch {
+    return '—';
+  }
+}
+
+function describeEntryType(entry) {
+  const isZh = state.lang === 'zh';
+  if (entry.previewType === 'markdown') return isZh ? '文档预览' : 'Markdown Preview';
+  if (entry.previewType === 'code') return isZh ? '代码预览' : 'Code Preview';
+  if (entry.type === 'dir') return isZh ? '目录' : 'Directory';
+  return isZh ? '源码链接' : 'Source Link';
+}
+
+function inferPreviewType(entry) {
+  if (entry.type !== 'file') return '';
+  const lower = entry.name.toLowerCase();
+  if (lower.endsWith('.md')) return 'markdown';
+  if (
+    /\.(bat|sh|txt|json|yaml|yml|toml|ini|cfg|ps1)$/i.test(entry.name) ||
+    entry.name === 'CMakeLists.txt' ||
+    entry.name === 'LICENSE' ||
+    entry.name === '.editorconfig' ||
+    entry.name === '.gitattributes' ||
+    entry.name === '.gitignore'
+  ) {
+    return 'code';
+  }
+  return '';
+}
+
+async function buildModuleItems(entries) {
+  const visibleEntries = entries.filter((entry) => entry && !String(entry.name || '').startsWith('.'));
+  const items = await Promise.all(visibleEntries.map(async (entry) => {
+    let nestedNames = [];
+    let nestedCount = 0;
+    if (entry.type === 'dir') {
+      const nested = await getRepoContent(MY_BASE_REPO, entry.path);
+      if (Array.isArray(nested)) {
+        const cleaned = nested.filter((child) => child && !String(child.name || '').startsWith('.'));
+        nestedCount = cleaned.length;
+        nestedNames = cleaned.slice(0, 6).map((child) => child.name);
+      }
+    }
+
+    return {
+      name: entry.name,
+      path: entry.path,
+      type: entry.type,
+      htmlUrl: entry.html_url || '#',
+      previewType: inferPreviewType(entry),
+      nestedNames,
+      nestedCount
+    };
+  }));
+
+  return items.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
+}
+
+async function loadMyBaseStructure() {
+  if (cachedMyBaseStructure) return cachedMyBaseStructure;
+
+  let repoInfo = cachedRepoMap[MY_BASE_REPO];
+  if (!repoInfo) {
+    repoInfo = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${MY_BASE_REPO}`);
+    if (repoInfo?.name) cachedRepoMap[repoInfo.name] = repoInfo;
+  }
+
+  const modules = [];
+  for (const module of myBaseModules) {
+    if (module.virtual) {
+      modules.push({ ...module, items: [] });
+      continue;
+    }
+
+    const entries = await getRepoContent(MY_BASE_REPO, module.key);
+    const items = Array.isArray(entries) ? await buildModuleItems(entries) : [];
+    modules.push({
+      ...module,
+      items,
+      htmlUrl: `https://github.com/${GITHUB_USER}/${MY_BASE_REPO}/tree/${encodeURIComponent(repoInfo?.default_branch || 'main')}/${encodeRepoPath(module.key)}`
+    });
+  }
+
+  cachedMyBaseStructure = { repo: repoInfo, modules };
+  return cachedMyBaseStructure;
+}
+
+async function loadMyBaseOverviewHtml() {
+  const readmeDoc = await getReadmeDoc(MY_BASE_REPO, state.lang);
+  const cacheKey = readmeDoc ? `${state.lang}:${readmeDoc.path}:${readmeDoc.sha || ''}` : `${state.lang}:missing`;
+  if (cacheKey in cachedMyBaseOverviewHtmlMap) return cachedMyBaseOverviewHtmlMap[cacheKey];
+  if (!readmeDoc) {
+    cachedMyBaseOverviewHtmlMap[cacheKey] = '';
+    return cachedMyBaseOverviewHtmlMap[cacheKey];
+  }
+  cachedMyBaseOverviewHtmlMap[cacheKey] = await renderGitHubMarkdown(readmeDoc.markdown, MY_BASE_REPO, readmeDoc);
+  return cachedMyBaseOverviewHtmlMap[cacheKey];
 }
 
 function renderStats() {
   const grid = document.getElementById('statsGrid');
-  const isZh = state.lang === 'zh';
+  if (!grid) return;
 
-  const totalStars = projects.reduce((sum, p) => sum + (cachedRepoMap[p.repo]?.stargazers_count || 0), 0);
-  const totalForks = projects.reduce((sum, p) => sum + (cachedRepoMap[p.repo]?.forks_count || 0), 0);
+  const isZh = state.lang === 'zh';
+  const totalStars = featuredProjects.reduce((sum, project) => sum + (cachedRepoMap[project.repo]?.stargazers_count || 0), 0);
+  const totalForks = featuredProjects.reduce((sum, project) => sum + (cachedRepoMap[project.repo]?.forks_count || 0), 0);
 
   const tiles = [
     { icon: '📦', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos' },
@@ -385,45 +662,46 @@ function renderStats() {
     { icon: '🔀', val: fmt(totalForks), label: 'Forks' }
   ];
 
-  grid.innerHTML = tiles.map((t) => `
+  grid.innerHTML = tiles.map((tile) => `
     <div class="stat-tile">
-      <span class="stat-icon">${t.icon}</span>
-      <span class="stat-value">${t.val}</span>
-      <span class="stat-label">${t.label}</span>
+      <span class="stat-icon">${tile.icon}</span>
+      <span class="stat-value">${tile.val}</span>
+      <span class="stat-label">${tile.label}</span>
     </div>
   `).join('');
 }
 
 function renderProjects() {
   const list = document.getElementById('projectList');
-  const isZh = state.lang === 'zh';
-  const commitLabel = isZh ? '提交' : 'commits';
-  const forkLabel = 'Forks';
+  if (!list) return;
 
-  list.innerHTML = projects.map((p) => {
-    const repo = cachedRepoMap[p.repo] || {};
+  const isZh = state.lang === 'zh';
+  const commitLabel = isZh ? '次提交' : 'commits';
+  const forkLabel = 'Forks';
+  const readmeTitle = isZh ? 'README 详情' : 'README Details';
+  const readmeHint = isZh ? '点击展开后自动加载项目 README' : 'Expand to load the project README';
+
+  list.innerHTML = featuredProjects.map((project) => {
+    const repo = cachedRepoMap[project.repo] || {};
     const stars = fmt(repo.stargazers_count);
     const forks = fmt(repo.forks_count);
-    const lang = repo.language || p.lang || 'N/A';
-    const commits = fmt(cachedCommits[p.repo]);
-    const desc = isZh ? p.zh : p.en;
-    const languageBadge = `<img class="shield-badge" src="https://img.shields.io/github/languages/top/${GITHUB_USER}/${p.repo}?style=flat-square" alt="${isZh ? '语言' : 'Language'}: ${lang}" loading="lazy" />`;
-    const versionBadge = cachedReleases[p.repo]
-      ? `<img class="shield-badge" src="https://img.shields.io/github/v/release/${GITHUB_USER}/${p.repo}?style=flat-square" alt="${isZh ? '版本' : 'Version'}" loading="lazy" />`
+    const lang = repo.language || project.lang || 'N/A';
+    const commits = fmt(cachedCommits[project.repo]);
+    const desc = isZh ? project.zh : project.en;
+    const languageBadge = `<img class="shield-badge" src="https://img.shields.io/github/languages/top/${GITHUB_USER}/${project.repo}?style=flat-square" alt="${isZh ? '语言' : 'Language'}: ${lang}" loading="lazy" />`;
+    const versionBadge = cachedReleases[project.repo]
+      ? `<img class="shield-badge" src="https://img.shields.io/github/v/release/${GITHUB_USER}/${project.repo}?style=flat-square" alt="${isZh ? '版本' : 'Version'}" loading="lazy" />`
       : '';
-    const readmeTitle = isZh ? 'README 详情' : 'README Details';
-    const readmeHint = isZh ? '点击展开后自动加载项目 README' : 'Expand to load the project README';
-
-    const ssHtml = p.screenshot ? `
+    const screenshotHtml = project.screenshot ? `
       <div class="project-screenshot-wrap">
-        <img class="project-screenshot" src="${p.screenshot}" alt="${p.display} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
+        <img class="project-screenshot" src="${project.screenshot}" alt="${escapeHtml(project.display)} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
       </div>` : '';
 
     return `
       <article class="project-item">
         <div class="project-body">
-          <h3><a href="${p.url}" target="_blank" rel="noreferrer">${p.display}</a></h3>
-          <p class="project-desc">${desc}</p>
+          <h3><a href="${project.url}" target="_blank" rel="noreferrer">${escapeHtml(project.display)}</a></h3>
+          <p class="project-desc">${escapeHtml(desc)}</p>
           <div class="project-meta-row">
             ${languageBadge}
             ${versionBadge}
@@ -431,15 +709,16 @@ function renderProjects() {
             <span class="badge">🔀 ${forkLabel} ${forks}</span>
             <span class="badge">🧾 ${commits} ${commitLabel}</span>
           </div>
-          <details class="readme-details" data-readme-repo="${p.repo}">
+          <details class="readme-details" data-readme-repo="${project.repo}">
             <summary>${readmeTitle}</summary>
             <div class="readme-panel" data-readme-panel>
               <p class="readme-loading">${readmeHint}</p>
             </div>
           </details>
         </div>
-        ${ssHtml}
-      </article>`;
+        ${screenshotHtml}
+      </article>
+    `;
   }).join('');
 
   bindReadmeDetails();
@@ -451,6 +730,7 @@ function bindReadmeDetails() {
     details.dataset.bound = '1';
     details.addEventListener('toggle', async () => {
       if (!details.open) return;
+
       const panel = details.querySelector('[data-readme-panel]');
       if (!panel) return;
 
@@ -471,13 +751,12 @@ function bindReadmeDetails() {
       }
 
       try {
-        const safeReadmeUrl = sanitizeUrl(doc.htmlUrl);
-        const safeReadmePath = escapeHtml(doc.path);
+        const renderedHtml = await renderGitHubMarkdown(doc.markdown, repo, doc);
         panel.innerHTML = `
           <div class="readme-source">
-            <a href="${safeReadmeUrl}" target="_blank" rel="noreferrer">${sourceText}: ${safeReadmePath}</a>
+            <a class="preview-source" href="${sanitizeExternalUrl(doc.htmlUrl)}" target="_blank" rel="noreferrer">${sourceText}: ${escapeHtml(doc.path)}</a>
           </div>
-          <div class="readme-content">${renderMarkdown(doc.markdown)}</div>
+          <div class="readme-content">${renderedHtml}</div>
         `;
         panel.dataset.loadedLang = state.lang;
       } catch (error) {
@@ -488,31 +767,301 @@ function bindReadmeDetails() {
   });
 }
 
+function renderMyBaseModuleNav() {
+  const nav = document.getElementById('myBaseModuleNav');
+  if (!nav) return;
+
+  nav.innerHTML = myBaseModules.map((module) => {
+    const label = labelForModule(module);
+    if (module.key === 'writings') {
+      const activeClass = state.route.detail === 'writings' ? ' module-chip-active' : '';
+      return `<a class="module-chip${activeClass}" href="#my-base/writings">${module.icon} ${escapeHtml(label)}</a>`;
+    }
+
+    return `<button class="module-chip" type="button" data-scroll-target="mybase-module-${module.key}">${module.icon} ${escapeHtml(label)}</button>`;
+  }).join('');
+
+  nav.querySelectorAll('[data-scroll-target]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetId = button.getAttribute('data-scroll-target');
+      const target = targetId ? document.getElementById(targetId) : null;
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+function renderMyBaseItem(item) {
+  const nestedHtml = item.nestedNames.length
+    ? `<div class="module-item-subitems">${item.nestedNames.map((name) => `<span class="module-subitem">${escapeHtml(name)}</span>`).join('')}</div>`
+    : '';
+  const previewBadge = item.previewType ? `<span class="badge">${escapeHtml(describeEntryType(item))}</span>` : '';
+  const nestedBadge = item.nestedCount ? `<span class="badge">${item.nestedCount} ${state.lang === 'zh' ? '项' : 'items'}</span>` : '';
+
+  if (item.previewType) {
+    return `
+      <button
+        type="button"
+        class="module-item-link"
+        data-preview-path="${escapeHtml(item.path)}"
+        data-preview-type="${escapeHtml(item.previewType)}"
+        data-preview-title="${escapeHtml(item.name)}"
+        data-preview-url="${escapeHtml(item.htmlUrl)}"
+      >
+        <div class="module-item-top">
+          <span class="module-item-title">${escapeHtml(item.name)}</span>
+          <span class="badge">${state.lang === 'zh' ? '打开预览' : 'Open Preview'}</span>
+        </div>
+        <div class="module-item-meta">
+          ${previewBadge}
+          ${nestedBadge}
+        </div>
+        ${nestedHtml}
+      </button>
+    `;
+  }
+
+  return `
+    <a class="module-item-link" href="${sanitizeExternalUrl(item.htmlUrl)}" target="_blank" rel="noreferrer">
+      <div class="module-item-top">
+        <span class="module-item-title">${escapeHtml(item.name)}</span>
+        <span class="badge">${state.lang === 'zh' ? '前往源码' : 'Open Source'}</span>
+      </div>
+      <div class="module-item-meta">
+        <span class="badge">${escapeHtml(describeEntryType(item))}</span>
+        ${nestedBadge}
+      </div>
+      ${nestedHtml}
+    </a>
+  `;
+}
+
+function renderMyBaseOverview(structure, overviewHtml) {
+  const isZh = state.lang === 'zh';
+  const repo = structure.repo || {};
+  const totalItems = structure.modules.reduce((sum, module) => sum + module.items.length, 0);
+  const overviewTitle = isZh ? 'My Base 总览' : 'My Base Overview';
+  const overviewLead = isZh
+    ? '当前页面直接按分类展示 My Base 中公开可浏览的内容，并支持文档/脚本预览。todos 模块已按要求隐藏，文稿随记暂保留空页面入口。'
+    : 'This page surfaces the public, browseable parts of My Base by category and supports document/script previews. The todos module is intentionally hidden, while writings currently remains as an empty-state entry.';
+  const sourceLabel = isZh ? '查看仓库' : 'Open Repository';
+  const updatedLabel = isZh ? '最近更新' : 'Last Updated';
+  const moduleCards = structure.modules.map((module) => {
+    const cardId = `mybase-module-${module.key}`;
+    const cardTitle = labelForModule(module);
+    const cardDesc = descForModule(module);
+    const countLabel = state.lang === 'zh' ? `${module.items.length} 项` : `${module.items.length} items`;
+    const githubLink = module.virtual
+      ? `<a href="#my-base/writings">${isZh ? '打开页面' : 'Open Page'}</a>`
+      : `<a href="${sanitizeExternalUrl(module.htmlUrl)}" target="_blank" rel="noreferrer">${sourceLabel}</a>`;
+    const itemsHtml = module.virtual
+      ? `<div class="module-item-list"><a class="module-item-link" href="#my-base/writings"><div class="module-item-top"><span class="module-item-title">${escapeHtml(cardTitle)}</span><span class="badge">${isZh ? '空页面入口' : 'Empty Page Entry'}</span></div><div class="module-item-meta"><span class="badge">${isZh ? '当前暂无内容' : 'Currently empty'}</span></div></a></div>`
+      : (module.items.length
+        ? `<div class="module-item-list">${module.items.map(renderMyBaseItem).join('')}</div>`
+        : `<p class="readme-loading">${isZh ? '当前分类暂无可展示内容。' : 'No public items are available in this category yet.'}</p>`);
+
+    return `
+      <article class="module-card" id="${cardId}">
+        <div class="module-card-header">
+          <div>
+            <h3 class="module-card-title">${module.icon} ${escapeHtml(cardTitle)}</h3>
+            <p class="module-card-desc">${escapeHtml(cardDesc)}</p>
+          </div>
+          <span class="badge module-card-count">${escapeHtml(countLabel)}</span>
+        </div>
+        <div class="module-card-links">${githubLink}</div>
+        ${itemsHtml}
+      </article>
+    `;
+  }).join('');
+
+  return `
+    <div class="my-base-layout">
+      <article class="overview-card">
+        <h2>${overviewTitle}</h2>
+        <p>${overviewLead}</p>
+        <div class="overview-meta">
+          <span class="badge">⭐ ${fmt(repo.stargazers_count)}</span>
+          <span class="badge">🔀 ${fmt(repo.forks_count)}</span>
+          <span class="badge">📦 ${structure.modules.length} ${isZh ? '分类' : 'modules'}</span>
+          <span class="badge">🧾 ${totalItems} ${isZh ? '公开条目' : 'public items'}</span>
+          <span class="badge">🕒 ${updatedLabel}: ${formatDate(repo.updated_at)}</span>
+        </div>
+        <div class="readme-panel">
+          <div class="readme-content">${overviewHtml || `<p>${isZh ? '暂无可用仓库简介。' : 'Repository overview is unavailable right now.'}</p>`}</div>
+        </div>
+      </article>
+      <div class="module-grid">
+        ${moduleCards}
+      </div>
+      <section class="preview-panel" id="myBasePreviewPanel">
+        ${renderPreviewPlaceholder()}
+      </section>
+    </div>
+  `;
+}
+
+function renderPreviewPlaceholder() {
+  const isZh = state.lang === 'zh';
+  return `
+    <div class="preview-placeholder">
+      <div>
+        <strong>${isZh ? '选择一个条目进行预览' : 'Select an item to preview'}</strong>
+        <p class="preview-placeholder-text">${isZh ? '支持直接预览 Markdown 文档与常见脚本/文本文件。' : 'Markdown documents and common script/text files can be previewed here.'}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderWritingsEmptyState() {
+  const isZh = state.lang === 'zh';
+  return `
+    <div class="my-base-layout">
+      <section class="empty-state">
+        <div class="breadcrumb">
+          <a class="breadcrumb-link" href="#my-base">${isZh ? 'My Base' : 'My Base'}</a>
+          <span class="breadcrumb-sep">/</span>
+          <span>${isZh ? '文稿随记' : 'Writings'}</span>
+        </div>
+        <h2>${isZh ? '文稿随记暂时为空' : 'Writings is currently empty'}</h2>
+        <p>${isZh ? '当前仅保留该模块入口与独立页面，后续有内容时可继续扩展。' : 'This module currently keeps only its entry and standalone page, and can be expanded later when content is added.'}</p>
+        <div class="page-actions">
+          <a href="#my-base">${isZh ? '返回 My Base' : 'Back to My Base'}</a>
+          <a href="https://github.com/JaderoChan/MyBase" target="_blank" rel="noreferrer">GitHub Repo</a>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+async function renderMyBaseContent() {
+  const container = document.getElementById('myBaseContent');
+  if (!container || state.route.page !== 'my-base') return;
+
+  container.innerHTML = `<p class="readme-loading">${state.lang === 'zh' ? 'My Base 页面加载中...' : 'Loading My Base...'}</p>`;
+  renderMyBaseModuleNav();
+
+  if (state.route.detail === 'writings') {
+    container.innerHTML = renderWritingsEmptyState();
+    return;
+  }
+
+  const [structure, overviewHtml] = await Promise.all([
+    loadMyBaseStructure(),
+    loadMyBaseOverviewHtml()
+  ]);
+
+  container.innerHTML = renderMyBaseOverview(structure, overviewHtml);
+  bindMyBasePreviewButtons();
+  await renderMyBasePreview();
+}
+
+function bindMyBasePreviewButtons() {
+  document.querySelectorAll('[data-preview-path]').forEach((button) => {
+    button.addEventListener('click', () => {
+      state.myBasePreviewItem = {
+        path: button.getAttribute('data-preview-path') || '',
+        type: button.getAttribute('data-preview-type') || '',
+        title: button.getAttribute('data-preview-title') || '',
+        htmlUrl: button.getAttribute('data-preview-url') || ''
+      };
+      void renderMyBasePreview();
+    });
+  });
+}
+
+async function renderMyBasePreview() {
+  const panel = document.getElementById('myBasePreviewPanel');
+  if (!panel) return;
+  if (!state.myBasePreviewItem) {
+    panel.innerHTML = renderPreviewPlaceholder();
+    return;
+  }
+
+  const isZh = state.lang === 'zh';
+  const loadingText = isZh ? '预览加载中...' : 'Loading preview...';
+  const failedText = isZh ? '预览加载失败，请稍后重试。' : 'Failed to load preview. Please try again.';
+  const sourceText = isZh ? '查看源码' : 'View source';
+
+  panel.innerHTML = `<p class="readme-loading">${loadingText}</p>`;
+  const file = await getRepoContent(MY_BASE_REPO, state.myBasePreviewItem.path);
+  if (!file || typeof file !== 'object' || !('content' in file)) {
+    panel.innerHTML = `<p class="readme-loading">${failedText}</p>`;
+    return;
+  }
+
+  const decoded = decodeBase64Utf8(file.content || '');
+  const doc = {
+    path: file.path || state.myBasePreviewItem.path,
+    htmlUrl: file.html_url || state.myBasePreviewItem.htmlUrl,
+    sha: file.sha || ''
+  };
+  const renderedBody = state.myBasePreviewItem.type === 'markdown'
+    ? `<div class="preview-rendered">${await renderGitHubMarkdown(decoded, MY_BASE_REPO, doc)}</div>`
+    : `<pre class="preview-code"><code>${escapeHtml(decoded)}</code></pre>`;
+
+  panel.innerHTML = `
+    <div class="preview-header">
+      <div>
+        <h3 class="preview-title">${escapeHtml(state.myBasePreviewItem.title)}</h3>
+        <p class="preview-subtitle">${escapeHtml(doc.path)}</p>
+      </div>
+      <div class="preview-actions">
+        <a class="preview-source" href="${sanitizeExternalUrl(doc.htmlUrl)}" target="_blank" rel="noreferrer">${sourceText}</a>
+      </div>
+    </div>
+    <div class="preview-body">
+      ${renderedBody}
+    </div>
+  `;
+}
+
+function updatePageVisibility() {
+  document.querySelectorAll('[data-page]').forEach((page) => {
+    page.classList.toggle('page-hidden', page.getAttribute('data-page') !== state.route.page);
+  });
+
+  document.querySelectorAll('[data-page-link]').forEach((link) => {
+    const page = link.getAttribute('data-page-link');
+    link.classList.toggle('nav-link-active', page === state.route.page && page !== 'home');
+  });
+
+  if (state.route.page === 'my-base') {
+    document.title = state.route.detail === 'writings'
+      ? 'Writings · My Base · 頔珞 JaderoChan Website'
+      : 'My Base · 頔珞 JaderoChan Website';
+  } else {
+    document.title = '頔珞 JaderoChan Website';
+  }
+}
+
 function renderAll() {
+  updatePageVisibility();
   renderStats();
   renderProjects();
+  renderMyBaseModuleNav();
+  void renderMyBaseContent();
 }
 
 async function loadData() {
   renderAll();
 
   const [user, allRepos] = await Promise.all([
-    apiFetch(`${API}/users/${GITHUB_USER}`),
-    apiFetch(`${API}/users/${GITHUB_USER}/repos?per_page=100&sort=updated`)
+    apiFetchJson(`${API}/users/${GITHUB_USER}`),
+    apiFetchJson(`${API}/users/${GITHUB_USER}/repos?per_page=100&sort=updated`)
   ]);
 
   cachedUser = user;
   if (Array.isArray(allRepos)) {
-    for (const r of allRepos) {
-      cachedRepoMap[r.name] = r;
+    for (const repo of allRepos) {
+      cachedRepoMap[repo.name] = repo;
     }
   }
   renderAll();
 
   const [commitResults, lastYearCommits, releaseResults] = await Promise.all([
-    Promise.all(projects.map(async (p) => [p.repo, await getCommitCount(p.repo)])),
+    Promise.all(featuredProjects.map(async (project) => [project.repo, await getCommitCount(project.repo)])),
     getLastYearCommitCount(),
-    Promise.all(projects.map(async (p) => [p.repo, await getLatestReleaseTag(p.repo)]))
+    Promise.all(featuredProjects.map(async (project) => [project.repo, await getLatestReleaseTag(project.repo)]))
   ]);
 
   cachedCommits = Object.fromEntries(commitResults);
@@ -525,8 +1074,8 @@ function setLang(lang) {
   state.lang = lang;
   localStorage.setItem('lang', lang);
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-  document.querySelectorAll('.zh').forEach((el) => el.classList.toggle('lang-hidden', lang !== 'zh'));
-  document.querySelectorAll('.en').forEach((el) => el.classList.toggle('lang-hidden', lang !== 'en'));
+  document.querySelectorAll('.zh').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'zh'));
+  document.querySelectorAll('.en').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'en'));
   renderAll();
 }
 
@@ -546,11 +1095,21 @@ function setupEmail() {
 document.getElementById('langBtn').addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
 document.getElementById('themeBtn').addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
+window.addEventListener('hashchange', () => {
+  state.route = parseHashRoute(window.location.hash);
+  renderAll();
+});
+
 setTheme(state.theme);
 setLang(state.lang);
 setupEmail();
+
 const currentYear = new Date().getFullYear();
 document.getElementById('year').textContent = currentYear;
 document.getElementById('year2').textContent = currentYear;
+
+if (!window.location.hash) {
+  window.location.hash = '#home';
+}
 
 loadData();
