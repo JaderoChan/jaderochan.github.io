@@ -153,8 +153,8 @@ const myBaseModules = [
     icon: '✍️',
     zh: '文稿随记',
     en: 'Writings',
-    descZh: '当前只保留入口，页面会提示内容暂为空。',
-    descEn: 'Currently kept as an entry only, with an empty-state page for now.',
+    descZh: '个人文稿随记',
+    descEn: 'Personal writings and notes.',
     virtual: true
   }
 ];
@@ -864,10 +864,7 @@ function renderMyBaseOverview(structure, overviewHtml) {
   const isZh = state.lang === 'zh';
   const repo = structure.repo || {};
   const totalItems = structure.modules.reduce((sum, module) => sum + module.items.length, 0);
-  const overviewTitle = isZh ? 'My Base 总览' : 'My Base Overview';
-  const overviewLead = isZh
-    ? '当前页面直接按分类展示 My Base 中公开可浏览的内容，并支持文档/脚本预览。todos 模块已按要求隐藏，文稿随记暂保留空页面入口。'
-    : 'This page surfaces the public, browseable parts of My Base by category and supports document/script previews. The todos module is intentionally hidden, while writings currently remains as an empty-state entry.';
+  const overviewTitle = isZh ? 'Base 总览' : 'Base Overview';
   const sourceLabel = isZh ? '查看仓库' : 'Open Repository';
   const updatedLabel = isZh ? '最近更新' : 'Last Updated';
   const moduleCards = structure.modules.map((module) => {
@@ -879,7 +876,7 @@ function renderMyBaseOverview(structure, overviewHtml) {
       ? `<a href="#my-base/writings">${isZh ? '打开页面' : 'Open Page'}</a>`
       : `<a href="${sanitizeExternalUrl(module.htmlUrl)}" target="_blank" rel="noreferrer">${sourceLabel}</a>`;
     const itemsHtml = module.virtual
-      ? `<div class="module-item-list"><a class="module-item-link" href="#my-base/writings"><div class="module-item-top"><span class="module-item-title">${escapeHtml(cardTitle)}</span><span class="badge">${isZh ? '空页面入口' : 'Empty Page Entry'}</span></div><div class="module-item-meta"><span class="badge">${isZh ? '当前暂无内容' : 'Currently empty'}</span></div></a></div>`
+      ? ''
       : (module.items.length
         ? `<div class="module-item-list">${module.items.map(renderMyBaseItem).join('')}</div>`
         : `<p class="readme-loading">${isZh ? '当前分类暂无可展示内容。' : 'No public items are available in this category yet.'}</p>`);
@@ -903,7 +900,6 @@ function renderMyBaseOverview(structure, overviewHtml) {
     <div class="my-base-layout">
       <article class="overview-card">
         <h2>${overviewTitle}</h2>
-        <p>${overviewLead}</p>
         <div class="overview-meta">
           <span class="badge">⭐ ${fmt(repo.stargazers_count)}</span>
           <span class="badge">🔀 ${fmt(repo.forks_count)}</span>
@@ -943,14 +939,14 @@ function renderWritingsEmptyState() {
     <div class="my-base-layout">
       <section class="empty-state">
         <div class="breadcrumb">
-          <a class="breadcrumb-link" href="#my-base">${isZh ? 'My Base' : 'My Base'}</a>
+          <a class="breadcrumb-link" href="#my-base">${isZh ? '基' : 'Base'}</a>
           <span class="breadcrumb-sep">/</span>
           <span>${isZh ? '文稿随记' : 'Writings'}</span>
         </div>
         <h2>${isZh ? '文稿随记暂时为空' : 'Writings is currently empty'}</h2>
         <p>${isZh ? '当前仅保留该模块入口与独立页面，后续有内容时可继续扩展。' : 'This module currently keeps only its entry and standalone page, and can be expanded later when content is added.'}</p>
         <div class="page-actions">
-          <a href="#my-base">${isZh ? '返回 My Base' : 'Back to My Base'}</a>
+          <a href="#my-base">${isZh ? '返回 Base' : 'Back to Base'}</a>
           <a href="https://github.com/JaderoChan/MyBase" target="_blank" rel="noreferrer">GitHub Repo</a>
         </div>
       </section>
@@ -962,7 +958,7 @@ async function renderMyBaseContent() {
   const container = document.getElementById('myBaseContent');
   if (!container || state.route.page !== 'my-base') return;
 
-  container.innerHTML = `<p class="readme-loading">${state.lang === 'zh' ? 'My Base 页面加载中...' : 'Loading My Base...'}</p>`;
+  container.innerHTML = `<p class="readme-loading">${state.lang === 'zh' ? 'Base 页面加载中...' : 'Loading Base...'}</p>`;
   renderMyBaseModuleNav();
 
   if (state.route.detail === 'writings') {
@@ -1052,8 +1048,8 @@ function updatePageVisibility() {
 
   if (state.route.page === 'my-base') {
     document.title = state.route.detail === 'writings'
-      ? 'Writings · My Base · 頔珞 JaderoChan Website'
-      : 'My Base · 頔珞 JaderoChan Website';
+      ? 'Writings · Base · 頔珞 JaderoChan Website'
+      : 'Base · 頔珞 JaderoChan Website';
   } else {
     document.title = '頔珞 JaderoChan Website';
   }
