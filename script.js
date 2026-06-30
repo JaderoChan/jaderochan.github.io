@@ -67,7 +67,7 @@ const projects = [
     screenshot: 'https://raw.githubusercontent.com/JaderoChan/ContentAwareImageCrop/main/screenshot/sufer_cropped.png'
   },
   {
-    display: 'Easy Link',
+    display: 'Easy Links',
     repo: 'EasyLinks',
     url: 'https://github.com/JaderoChan/EasyLinks',
     lang: 'C++',
@@ -124,9 +124,13 @@ async function getCommitCount(repo) {
 
 async function getLastYearCommitCount() {
   try {
-    const since = new Date();
-    since.setFullYear(since.getFullYear() - 1);
-    const sinceDate = since.toISOString().slice(0, 10);
+    const now = new Date();
+    const targetYear = now.getUTCFullYear() - 1;
+    const targetMonth = now.getUTCMonth();
+    const targetDay = now.getUTCDate();
+    const maxDayInTargetMonth = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
+    const safeDay = Math.min(targetDay, maxDayInTargetMonth);
+    const sinceDate = new Date(Date.UTC(targetYear, targetMonth, safeDay)).toISOString().slice(0, 10);
     const query = encodeURIComponent(`author:${GITHUB_USER} committer-date:>=${sinceDate}`);
     const res = await fetch(`${API}/search/commits?q=${query}&per_page=1`, {
       headers: { Accept: 'application/vnd.github+json' }
@@ -173,6 +177,7 @@ function renderProjects() {
   const list = document.getElementById('projectList');
   const isZh = state.lang === 'zh';
   const commitLabel = isZh ? '提交' : 'commits';
+  const forkLabel = 'Fork';
 
   list.innerHTML = projects.map((p) => {
     const repo = cachedRepoMap[p.repo] || {};
@@ -198,7 +203,7 @@ function renderProjects() {
             ${languageBadge}
             ${versionBadge}
             <span class="badge">⭐ ${stars}</span>
-            <span class="badge">🔀 Fork ${forks}</span>
+            <span class="badge">🔀 ${forkLabel} ${forks}</span>
             <span class="badge">🧾 ${commits} ${commitLabel}</span>
           </div>
         </div>
