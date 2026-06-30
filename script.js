@@ -189,6 +189,10 @@ function pickPreferredReadmePath(paths, lang) {
   return paths.find((path) => /^readme(\..+)?$/i.test((path.split('/').pop() || '').trim())) || null;
 }
 
+function isFallbackReadmePath(path) {
+  return README_PATH_CANDIDATES.fallback.some((candidate) => normalizeRepoPath(candidate) === normalizeRepoPath(path));
+}
+
 function decodeBase64Utf8(base64) {
   try {
     const clean = (base64 || '').replace(/\n/g, '');
@@ -310,13 +314,16 @@ async function resolveReadmePath(repo, lang) {
       .forEach((item) => {
         if (item.path) readmePaths.push(item.path);
       });
+
+    const preferred = pickPreferredReadmePath(readmePaths, lang);
+    if (preferred && (dir !== '' || !isFallbackReadmePath(preferred))) break;
   }
 
   const preferredPath = pickPreferredReadmePath(readmePaths, lang);
   if (preferredPath) {
     cachedReadmePathMap[cacheKey] = {
       path: preferredPath,
-      htmlUrl: `https://github.com/${GITHUB_USER}/${repo}/blob/HEAD/${encodeContentPath(preferredPath)}`
+      htmlUrl: null
     };
     return cachedReadmePathMap[cacheKey];
   }
