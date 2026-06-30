@@ -181,10 +181,14 @@ function encodeContentPath(path) {
 }
 
 function decodeBase64Utf8(base64) {
-  const clean = (base64 || '').replace(/\n/g, '');
-  const binary = atob(clean);
-  const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
-  return new TextDecoder('utf-8').decode(bytes);
+  try {
+    const clean = (base64 || '').replace(/\n/g, '');
+    const binary = atob(clean);
+    const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch {
+    return '';
+  }
 }
 
 function escapeHtml(text) {
@@ -442,7 +446,8 @@ function bindReadmeDetails() {
           <div class="readme-content">${renderMarkdown(doc.markdown)}</div>
         `;
         panel.dataset.loadedLang = state.lang;
-      } catch {
+      } catch (error) {
+        console.error('README render error:', error);
         panel.innerHTML = `<p class="readme-loading">${failedText}</p>`;
       }
     });
