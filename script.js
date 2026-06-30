@@ -162,7 +162,7 @@ let cachedReadmeDocMap = {};
 let cachedRenderedMarkdownMap = {};
 let cachedRepoContentMap = {};
 let cachedMyBaseStructure = null;
-let cachedMyBaseOverviewHtml = null;
+let cachedMyBaseOverviewHtmlMap = {};
 
 function parseHashRoute(hash) {
   const cleaned = String(hash || '').replace(/^#/, '').trim();
@@ -418,7 +418,7 @@ function rewriteRenderedMarkdownUrls(html, repo, doc) {
 }
 
 async function renderGitHubMarkdown(markdown, repo, doc) {
-  const cacheKey = `${repo}:${doc.path}:${String(markdown || '').length}:${String(markdown || '').slice(0, 48)}`;
+  const cacheKey = `${state.lang}:${repo}:${doc.path}:${String(markdown || '').length}:${String(markdown || '').slice(0, 48)}`;
   if (cacheKey in cachedRenderedMarkdownMap) return cachedRenderedMarkdownMap[cacheKey];
 
   const rendered = await apiFetchText(`${API}/markdown`, {
@@ -624,14 +624,15 @@ async function loadMyBaseStructure() {
 }
 
 async function loadMyBaseOverviewHtml() {
-  if (cachedMyBaseOverviewHtml !== null) return cachedMyBaseOverviewHtml;
+  const cacheKey = state.lang;
+  if (cacheKey in cachedMyBaseOverviewHtmlMap) return cachedMyBaseOverviewHtmlMap[cacheKey];
   const readmeDoc = await getReadmeDoc(MY_BASE_REPO, state.lang);
   if (!readmeDoc) {
-    cachedMyBaseOverviewHtml = '';
-    return cachedMyBaseOverviewHtml;
+    cachedMyBaseOverviewHtmlMap[cacheKey] = '';
+    return cachedMyBaseOverviewHtmlMap[cacheKey];
   }
-  cachedMyBaseOverviewHtml = await renderGitHubMarkdown(readmeDoc.markdown, MY_BASE_REPO, readmeDoc);
-  return cachedMyBaseOverviewHtml;
+  cachedMyBaseOverviewHtmlMap[cacheKey] = await renderGitHubMarkdown(readmeDoc.markdown, MY_BASE_REPO, readmeDoc);
+  return cachedMyBaseOverviewHtmlMap[cacheKey];
 }
 
 function renderStats() {
