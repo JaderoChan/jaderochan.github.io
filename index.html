@@ -3,191 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JaderoChan | Portfolio</title>
-  <meta name="description" content="JaderoChan's bilingual portfolio website." />
+  <title>JaderoChan Website</title>
+  <meta name="description" content="JaderoChan Website - bilingual portfolio and project showcase." />
   <link rel="icon" href="https://github.com/JaderoChan.png" type="image/png" />
-  <style>
-    :root {
-      --bg: #0b1020;
-      --bg-soft: #111831;
-      --text: #eaf0ff;
-      --text-soft: #a7b4d6;
-      --brand: #7aa2ff;
-      --brand-2: #7ef0c5;
-      --card: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.12);
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    html[data-theme="light"] {
-      --bg: #f7f9ff;
-      --bg-soft: #ffffff;
-      --text: #1a2440;
-      --text-soft: #5a678a;
-      --brand: #3a63ff;
-      --brand-2: #00a87e;
-      --card: rgba(26,36,64,0.04);
-      --border: rgba(26,36,64,0.12);
-      --shadow: 0 10px 30px rgba(15,35,95,.08);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(1200px 500px at 85% -10%, rgba(122,162,255,.20), transparent 60%),
-                  radial-gradient(900px 500px at -10% 20%, rgba(126,240,197,.15), transparent 60%),
-                  var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    .container { width: min(1100px, 92vw); margin: 0 auto; }
-    header {
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: blur(10px);
-      background: color-mix(in srgb, var(--bg) 75%, transparent);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
-    .brand { font-weight: 700; letter-spacing: .3px; }
-    .controls { display: flex; gap: 10px; }
-    button {
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .hero { padding: 60px 0 28px; }
-    .title {
-      font-size: clamp(30px, 5vw, 52px);
-      line-height: 1.15;
-      margin: 0 0 16px;
-      letter-spacing: .2px;
-    }
-    .title .grad {
-      background: linear-gradient(90deg, var(--brand), var(--brand-2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .subtitle { color: var(--text-soft); font-size: clamp(15px, 2vw, 18px); max-width: 780px; margin: 0 0 18px; }
-    .quick-links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .quick-links a, .contact-links a {
-      color: var(--text); text-decoration: none;
-      border: 1px solid var(--border);
-      background: var(--card);
-      padding: 8px 14px; border-radius: 10px; font-size: 14px;
-      display: inline-flex; align-items: center; gap: 6px;
-      transition: border-color .15s;
-    }
-    .quick-links a:hover, .contact-links a:hover {
-      border-color: color-mix(in srgb, var(--brand) 50%, var(--border));
-    }
-    section { padding: 28px 0; }
-    h2 { margin: 0 0 18px; font-size: 24px; }
-    .badge {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 3px 10px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    /* ── About / Profile ── */
-    .profile-card {
-      display: flex;
-      gap: 28px;
-      align-items: flex-start;
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: var(--shadow);
-    }
-    .avatar {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      flex-shrink: 0;
-      object-fit: cover;
-    }
-    .profile-info h3 { margin: 0 0 10px; font-size: 20px; }
-    .profile-info p { margin: 0 0 14px; color: var(--text-soft); font-size: 15px; max-width: 700px; }
-    .contact-links { display: flex; flex-wrap: wrap; gap: 10px; }
-
-    /* ── Stats ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-      gap: 14px;
-    }
-    .stat-tile {
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 14px;
-      padding: 20px 16px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .stat-icon { font-size: 22px; display: block; margin-bottom: 4px; }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      background: linear-gradient(90deg, var(--brand), var(--brand-2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      display: block;
-      line-height: 1.15;
-    }
-    .stat-label { font-size: 13px; color: var(--text-soft); margin-top: 5px; display: block; }
-
-    /* ── Project list ── */
-    .project-list { display: flex; flex-direction: column; gap: 16px; }
-    .project-item {
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 14px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-      transition: border-color .2s ease;
-      display: flex;
-      gap: 22px;
-      align-items: flex-start;
-    }
-    .project-item:hover {
-      border-color: color-mix(in srgb, var(--brand) 40%, var(--border));
-    }
-    .project-body { flex: 1; min-width: 0; }
-    .project-body h3 { margin: 0 0 7px; font-size: 18px; }
-    .project-body h3 a { color: var(--text); text-decoration: none; }
-    .project-body h3 a:hover { color: var(--brand); }
-    .project-desc { color: var(--text-soft); font-size: 14px; margin: 0 0 12px; }
-    .project-meta-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
-    .meta-link { color: var(--brand); text-decoration: none; font-size: 13px; }
-    .meta-link:hover { text-decoration: underline; }
-    .project-screenshot-wrap { flex-shrink: 0; width: 200px; }
-    .project-screenshot {
-      width: 100%;
-      max-height: 160px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      display: block;
-    }
-
-    footer { padding: 28px 0 42px; color: var(--text-soft); font-size: 14px; }
-    .lang-hidden { display: none !important; }
-
-    @media (max-width: 680px) {
-      .profile-card { flex-direction: column; }
-      .avatar { width: 80px; height: 80px; }
-      .project-item { flex-direction: column; }
-      .project-screenshot-wrap { width: 100%; }
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <header>
@@ -202,18 +21,16 @@
 
   <main class="container">
 
-    <!-- Hero -->
     <section class="hero">
       <h1 class="title">
         <span class="zh">你好，我是 <span class="grad">JaderoChan</span></span>
         <span class="en lang-hidden">Hi, I'm <span class="grad">JaderoChan</span></span>
       </h1>
       <p class="subtitle zh">
-        偏好 C/C++ 的开发者，专注跨平台工具、输入设备能力（HID / Hotkey）与桌面效率提升。
+        C/C++ 开发者，长期关注算法实现、底层机制与工程可落地性，正在积极寻找相关岗位机会。
       </p>
       <p class="subtitle en lang-hidden">
-        A C/C++ developer focused on cross-platform tooling, HID/Hotkey capabilities,
-        and productivity-oriented desktop utilities.
+        A C/C++ developer focused on algorithm implementation, low-level principles, and production-ready engineering, currently open to new job opportunities.
       </p>
       <div class="quick-links">
         <a href="https://github.com/JaderoChan" target="_blank" rel="noreferrer">
@@ -223,7 +40,6 @@
       </div>
     </section>
 
-    <!-- About -->
     <section id="about">
       <h2 class="zh">关于我</h2>
       <h2 class="en lang-hidden">About Me</h2>
@@ -232,29 +48,30 @@
         <div class="profile-info">
           <h3>頔珞 · JaderoChan</h3>
           <p class="zh">
-            C/C++ 开发者，热衷于跨平台底层工具的设计与实现。主要关注输入设备（HID）、全局快捷键管理、图像处理算法以及桌面效率工具。喜欢探索系统级编程、算法实现与工具链构建，致力于写出简洁、高性能、易于集成的代码。
+            我是一名 C/C++ 开发者，主要聚焦 C/C++ 后端开发、Qt 桌面端开发与跨平台工程实践，具备 Windows、macOS、Linux 多平台开发经验；也长期使用 Python 编写自动化脚本，并熟练使用 CMake 组织构建流程，熟悉 C++17 常用新特性。除了持续投入算法实现、底层原理与性能细节的学习外，我也重视良好的注释习惯、Doxygen 注释文档与 Markdown 文档编写，努力把工程能力沉淀为清晰、可维护、可复用的成果。我目前处于求职状态，期待在算法、系统工具链与高性能工程方向参与更有挑战的项目。
           </p>
           <p class="en lang-hidden">
-            A C/C++ developer passionate about cross-platform low-level tooling. Focused on input devices (HID), global hotkey management, image processing algorithms, and desktop productivity tools. Enjoys system-level programming, algorithm implementation, and toolchain building — striving for clean, high-performance, and easily integrable code.
+            I'm a C/C++ developer focused on backend development, Qt desktop applications, and cross-platform engineering across Windows, macOS, and Linux. I also use Python for scripting and automation, work comfortably with CMake-based build systems, and am familiar with practical C++17 features. Alongside continuous work on algorithms, low-level principles, and performance details, I value clear code comments, Doxygen documentation, and well-structured Markdown writing so that engineering outcomes stay maintainable and reusable. I am currently open to work and looking for opportunities in algorithm-focused, systems, and high-performance engineering roles.
           </p>
           <div class="contact-links">
             <a href="https://github.com/JaderoChan" target="_blank" rel="noreferrer">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.071 1.531 1.031 1.531 1.031.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.203 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg>
               github.com/JaderoChan
             </a>
+            <a id="emailLink" href="#">📧 Email</a>
+            <span class="badge status-badge zh">🟢 求职中</span>
+            <span class="badge status-badge en lang-hidden">🟢 Open to Work</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- GitHub Stats -->
     <section id="stats">
       <h2 class="zh">GitHub 统计</h2>
       <h2 class="en lang-hidden">GitHub Stats</h2>
       <div class="stats-grid" id="statsGrid"></div>
     </section>
 
-    <!-- Featured Projects -->
     <section id="projects">
       <h2 class="zh">精选项目</h2>
       <h2 class="en lang-hidden">Featured Projects</h2>
@@ -268,229 +85,6 @@
     <span class="en lang-hidden">© <span id="year2"></span> JaderoChan · Powered by GitHub Pages</span>
   </footer>
 
-  <script>
-    const GITHUB_USER = 'JaderoChan';
-    const API = 'https://api.github.com';
-
-    const projects = [
-      {
-        name: "global_hotkey",
-        url: "https://github.com/JaderoChan/global_hotkey",
-        lang: "C++",
-        zh: "独立跨平台全局快捷键库，含 Hook 实现，支持 Windows / macOS / Linux，可用于任意场景，提供 C 和 Python 绑定。",
-        en: "Independent cross-platform global hotkey library with hook implementation. Supports Windows, macOS, and Linux in any application context, with C and Python bindings.",
-        screenshot: null
-      },
-      {
-        name: "hidtool",
-        url: "https://github.com/JaderoChan/hidtool",
-        lang: "C++",
-        zh: "跨平台 HID 工具（键盘 / 鼠标），支持全局事件监听与输入模拟，提供 C 和 Python 绑定。",
-        en: "Cross-platform HID library for keyboard/mouse event listening and input simulation, with C and Python bindings.",
-        screenshot: null
-      },
-      {
-        name: "keyboard_tools",
-        url: "https://github.com/JaderoChan/keyboard_tools",
-        lang: "C++",
-        zh: "跨平台键盘事件监听与发送库，是 global_hotkey 和 hidtool 的底层依赖。",
-        en: "Cross-platform keyboard event listening and sending library, used as the underlying dependency for global_hotkey and hidtool.",
-        screenshot: null
-      },
-      {
-        name: "EasyLinks",
-        url: "https://github.com/JaderoChan/EasyLinks",
-        lang: "C++",
-        zh: "桌面文件管理链接工具，支持符号链接、硬链接与 Pattern Link，通过全局热键从剪贴板快速链接到目标目录。",
-        en: "Desktop file management link tool supporting symbolic links, hard links, and Pattern Link via global hotkeys from the clipboard to a target directory.",
-        screenshot: "https://raw.githubusercontent.com/JaderoChan/EasyLinks/main/doc/screenshots/progress_dialog_en.png"
-      },
-      {
-        name: "OpenCmdAnywhere",
-        url: "https://github.com/JaderoChan/OpenCmdAnywhere",
-        lang: "C++",
-        zh: "通过快捷键在当前上下文目录快速打开命令行终端，提升日常开发效率。",
-        en: "Open a terminal quickly in the current context directory via a configurable hotkey, boosting daily development productivity.",
-        screenshot: null
-      },
-      {
-        name: "BPNN",
-        url: "https://github.com/JaderoChan/BPNN",
-        lang: "C",
-        zh: "纯 C99 实现的三层全连接反向传播神经网络学习项目，无任何外部依赖。",
-        en: "A pure C99 three-layer fully-connected backpropagation neural network library with no external dependencies.",
-        screenshot: null
-      },
-      {
-        name: "ContentAwareImageCrop",
-        url: "https://github.com/JaderoChan/ContentAwareImageCrop",
-        lang: "C++",
-        zh: "基于接缝雕刻（Seam Carving）算法的内容感知图像裁切工具，支持实时进度可视化、撤销重做与多语言界面。",
-        en: "Content-aware image cropping tool based on the Seam Carving algorithm, with real-time seam visualization, undo/redo, and bilingual UI.",
-        screenshot: "https://raw.githubusercontent.com/JaderoChan/ContentAwareImageCrop/main/screenshot/sufer_cropped.png"
-      },
-      {
-        name: "mcnbt",
-        url: "https://github.com/JaderoChan/mcnbt",
-        lang: "C++",
-        zh: "高性能 Header-only MC NBT 读写库，支持 gzip 解压缩、Java 版与基岩版格式、SNBT 及单方块实体结构生成。",
-        en: "High-performance header-only MC NBT read/write library with gzip support, Java/Bedrock editions, SNBT, and block entity structure generation.",
-        screenshot: null
-      }
-    ];
-
-    // ── State ──
-    const state = {
-      lang: localStorage.getItem("lang") || "zh",
-      theme: localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
-    };
-
-    // ── GitHub data cache ──
-    let cachedUser    = null;
-    let cachedRepoMap = {};
-    let cachedCommits = [];
-
-    // ── Helpers ──
-    async function apiFetch(url) {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        return await res.json();
-      } catch { return null; }
-    }
-
-    async function getCommitCount(repo) {
-      try {
-        const res = await fetch(`${API}/repos/${GITHUB_USER}/${repo}/commits?per_page=1`);
-        if (!res.ok) return null;
-        const link = res.headers.get('Link');
-        if (!link) {
-          const data = await res.json();
-          return Array.isArray(data) ? data.length : null;
-        }
-        const m = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
-        return m ? parseInt(m[1]) : 1;
-      } catch { return null; }
-    }
-
-    function fmt(n) {
-      if (n === null || n === undefined) return '—';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
-      return String(n);
-    }
-
-    // ── Render stats ──
-    function renderStats() {
-      const grid = document.getElementById('statsGrid');
-      const isZh = state.lang === 'zh';
-
-      const totalStars = projects.reduce((s, p) => s + (cachedRepoMap[p.name]?.stargazers_count || 0), 0);
-      const totalForks = projects.reduce((s, p) => s + (cachedRepoMap[p.name]?.forks_count    || 0), 0);
-
-      const tiles = [
-        { icon: '📦', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos'    },
-        { icon: '👥', val: fmt(cachedUser?.followers),    label: isZh ? '关注者'   : 'Followers'        },
-        { icon: '⭐', val: fmt(totalStars),                label: isZh ? '精选星标' : 'Featured Stars'   },
-        { icon: '🍴', val: fmt(totalForks),                label: isZh ? '精选分叉' : 'Featured Forks'   },
-      ];
-
-      grid.innerHTML = tiles.map(t => `
-        <div class="stat-tile">
-          <span class="stat-icon">${t.icon}</span>
-          <span class="stat-value">${t.val}</span>
-          <span class="stat-label">${t.label}</span>
-        </div>
-      `).join('');
-    }
-
-    // ── Render project list ──
-    function renderProjects() {
-      const list  = document.getElementById('projectList');
-      const isZh  = state.lang === 'zh';
-      const commitLabel = isZh ? '提交' : 'commits';
-
-      list.innerHTML = projects.map((p, i) => {
-        const repo    = cachedRepoMap[p.name] || {};
-        const stars   = fmt(repo.stargazers_count);
-        const forks   = fmt(repo.forks_count);
-        const lang    = repo.language || p.lang || 'N/A';
-        const commits = fmt(cachedCommits[i]);
-        const desc    = isZh ? p.zh : p.en;
-
-        const ssHtml = p.screenshot ? `
-          <div class="project-screenshot-wrap">
-            <a href="${p.url}" target="_blank" rel="noreferrer">
-              <img class="project-screenshot" src="${p.screenshot}" alt="${p.name} screenshot" loading="lazy" onerror="this.closest('.project-screenshot-wrap').style.display='none'" />
-            </a>
-          </div>` : '';
-
-        return `
-          <article class="project-item">
-            <div class="project-body">
-              <h3><a href="${p.url}" target="_blank" rel="noreferrer">${p.name}</a></h3>
-              <p class="project-desc">${desc}</p>
-              <div class="project-meta-row">
-                <span class="badge" style="color:var(--brand-2);">${lang}</span>
-                <span class="badge">⭐ ${stars}</span>
-                <span class="badge">🍴 ${forks}</span>
-                <span class="badge">📝 ${commits} ${commitLabel}</span>
-                <a class="meta-link" href="${p.url}" target="_blank" rel="noreferrer">GitHub ↗</a>
-              </div>
-            </div>
-            ${ssHtml}
-          </article>`;
-      }).join('');
-    }
-
-    function renderAll() {
-      renderStats();
-      renderProjects();
-    }
-
-    // ── Load GitHub data (progressive) ──
-    async function loadData() {
-      renderAll(); // initial render with placeholders
-
-      const [user, allRepos] = await Promise.all([
-        apiFetch(`${API}/users/${GITHUB_USER}`),
-        apiFetch(`${API}/users/${GITHUB_USER}/repos?per_page=100&sort=updated`)
-      ]);
-
-      cachedUser = user;
-      if (Array.isArray(allRepos)) {
-        for (const r of allRepos) cachedRepoMap[r.name] = r;
-      }
-      renderAll(); // update with user/star data
-
-      cachedCommits = await Promise.all(projects.map(p => getCommitCount(p.name)));
-      renderAll();  // update with commit counts
-    }
-
-    // ── Lang / Theme ──
-    function setLang(lang) {
-      state.lang = lang;
-      localStorage.setItem("lang", lang);
-      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-      document.querySelectorAll(".zh").forEach(el => el.classList.toggle("lang-hidden", lang !== "zh"));
-      document.querySelectorAll(".en").forEach(el => el.classList.toggle("lang-hidden", lang !== "en"));
-      renderAll();
-    }
-
-    function setTheme(theme) {
-      state.theme = theme;
-      localStorage.setItem("theme", theme);
-      document.documentElement.setAttribute("data-theme", theme);
-    }
-
-    document.getElementById("langBtn").addEventListener("click", () => setLang(state.lang === "zh" ? "en" : "zh"));
-    document.getElementById("themeBtn").addEventListener("click", () => setTheme(state.theme === "dark" ? "light" : "dark"));
-
-    setTheme(state.theme);
-    setLang(state.lang);
-    document.getElementById("year").textContent  = new Date().getFullYear();
-    document.getElementById("year2").textContent = new Date().getFullYear();
-
-    loadData();
-  </script>
+  <script src="./script.js"></script>
 </body>
 </html>
