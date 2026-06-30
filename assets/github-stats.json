@@ -1,11 +1,231 @@
 {
   "schemaVersion": 1,
-  "generatedAt": null,
+  "generatedAt": "2026-06-30T05:04:50.749Z",
   "user": {
-    "public_repos": null,
-    "followers": null
+    "public_repos": 30,
+    "followers": 14
   },
-  "repos": {},
-  "commits": {},
-  "lastYearCommits": null
+  "repos": {
+    "jaderochan.github.io": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "JavaScript",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T05:04:39Z"
+    },
+    "global_hotkey": {
+      "stargazers_count": 5,
+      "forks_count": 2,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T05:01:38Z"
+    },
+    "MyBase": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "Batchfile",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T04:42:48Z"
+    },
+    "MyAlgorithms": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T04:42:42Z"
+    },
+    "ContentAwareImageCrop": {
+      "stargazers_count": 1,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T02:29:38Z"
+    },
+    "BPNN": {
+      "stargazers_count": 1,
+      "forks_count": 0,
+      "language": "C",
+      "default_branch": "main",
+      "updated_at": "2026-06-30T00:52:32Z"
+    },
+    "EasyLinks": {
+      "stargazers_count": 2,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:59:13Z"
+    },
+    "OpenCmdAnywhere": {
+      "stargazers_count": 4,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:46:32Z"
+    },
+    "WWClose": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:45:07Z"
+    },
+    "keyboard_tools": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:41:02Z"
+    },
+    "hidtool": {
+      "stargazers_count": 1,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:40:09Z"
+    },
+    "MyKnowledgeNotes": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-06-29T12:36:02Z"
+    },
+    "harmonoid": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "Dart",
+      "default_branch": "master",
+      "updated_at": "2026-06-18T09:54:59Z"
+    },
+    "Content-aware-image-resizing": {
+      "stargazers_count": 2,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-05-28T18:21:00Z"
+    },
+    "hidtool_python": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-05-27T11:46:35Z"
+    },
+    "hidtool_c": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C",
+      "default_branch": "main",
+      "updated_at": "2026-05-27T11:45:52Z"
+    },
+    "global_hotkey_bindings": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": null,
+      "default_branch": "main",
+      "updated_at": "2026-05-27T11:44:12Z"
+    },
+    "QRangeSlider": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "Python",
+      "default_branch": "master",
+      "updated_at": "2026-05-22T19:12:58Z"
+    },
+    "Taylor-Series-compute-log": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C",
+      "default_branch": "main",
+      "updated_at": "2026-05-05T11:11:57Z"
+    },
+    "mcnbt": {
+      "stargazers_count": 5,
+      "forks_count": 1,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-05-05T11:01:31Z"
+    },
+    "CommandLineMenu": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-04-28T18:08:21Z"
+    },
+    "easy_translate": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-04-01T16:04:51Z"
+    },
+    "Knotted-Rope": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-03-11T15:15:04Z"
+    },
+    "MiniLog": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2026-02-14T14:06:06Z"
+    },
+    "StepToJson": {
+      "stargazers_count": 3,
+      "forks_count": 0,
+      "language": "Python",
+      "default_branch": "main",
+      "updated_at": "2026-02-13T18:46:14Z"
+    },
+    "tdesktop": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": null,
+      "default_branch": "dev",
+      "updated_at": "2025-12-15T03:25:37Z"
+    },
+    "vcpkg": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "CMake",
+      "default_branch": "master",
+      "updated_at": "2025-12-04T08:21:51Z"
+    },
+    "bedrock-wiki": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": null,
+      "default_branch": "wiki",
+      "updated_at": "2025-11-27T16:09:26Z"
+    },
+    "MCAllin-BE": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2025-06-23T12:59:09Z"
+    },
+    "Datetime": {
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "C++",
+      "default_branch": "main",
+      "updated_at": "2025-04-09T11:26:34Z"
+    }
+  },
+  "commits": {
+    "hidtool": 228,
+    "global_hotkey": 178,
+    "mcnbt": 294,
+    "BPNN": 6,
+    "Taylor-Series-compute-log": 52,
+    "ContentAwareImageCrop": 174,
+    "EasyLinks": 453,
+    "OpenCmdAnywhere": 130
+  },
+  "lastYearCommits": 1720
 }
