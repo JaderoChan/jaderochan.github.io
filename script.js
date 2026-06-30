@@ -418,7 +418,7 @@ function rewriteRenderedMarkdownUrls(html, repo, doc) {
 }
 
 async function renderGitHubMarkdown(markdown, repo, doc) {
-  const cacheKey = `${state.lang}:${repo}:${doc.path}:${String(markdown || '').length}:${String(markdown || '').slice(0, 48)}`;
+  const cacheKey = `${state.lang}:${repo}:${doc.path}:${doc.sha || String(markdown || '')}`;
   if (cacheKey in cachedRenderedMarkdownMap) return cachedRenderedMarkdownMap[cacheKey];
 
   const rendered = await apiFetchText(`${API}/markdown`, {
@@ -502,7 +502,8 @@ async function getReadmeDoc(repo, lang) {
     repo,
     markdown: decodeBase64Utf8(data.content),
     htmlUrl: data.html_url || readmePath.htmlUrl,
-    path: readmePath.path
+    path: readmePath.path,
+    sha: data.sha || ''
   };
   return cachedReadmeDocMap[cacheKey];
 }
@@ -981,7 +982,8 @@ async function renderMyBasePreview() {
   const decoded = decodeBase64Utf8(file.content || '');
   const doc = {
     path: file.path || state.myBasePreviewItem.path,
-    htmlUrl: file.html_url || state.myBasePreviewItem.htmlUrl
+    htmlUrl: file.html_url || state.myBasePreviewItem.htmlUrl,
+    sha: file.sha || ''
   };
   const renderedBody = state.myBasePreviewItem.type === 'markdown'
     ? `<div class="preview-rendered">${await renderGitHubMarkdown(decoded, MY_BASE_REPO, doc)}</div>`
