@@ -196,37 +196,90 @@ function escapeHtml(text) {
     .replace(/'/g, '&#39;');
 }
 
+function sanitizeUrl(url) {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.toString();
+    return '#';
+  } catch {
+    return '#';
+  }
+}
+
+function formatInlineMarkdown(text) {
+  let safe = escapeHtml(text || '');
+  safe = safe.replace(/`([^`]+)`/g, '<code>$1</code>');
+  safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  safe = safe.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  return safe;
+}
+
 function renderMarkdown(md) {
-  let html = escapeHtml(md || '');
+  const lines = String(md || '').replace(/\r\n/g, '\n').split('\n');
+  let html = '';
+  let inCode = false;
+  let codeLines = [];
+  let inList = false;
 
-  html = html.replace(/^###### (.*)$/gm, '<h6>$1</h6>');
-  html = html.replace(/^##### (.*)$/gm, '<h5>$1</h5>');
-  html = html.replace(/^#### (.*)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.*)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.*)$/gm, '<h1>$1</h1>');
+  const closeList = () => {
+    if (!inList) return;
+    html += '</ul>';
+    inList = false;
+  };
 
-  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-  html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+  const closeCode = () => {
+    if (!inCode) return;
+    html += `<pre><code>${codeLines.join('\n')}</code></pre>`;
+    inCode = false;
+    codeLines = [];
+  };
 
-  html = html.replace(/(?:^|\n)- (.+)(?=\n|$)/g, '<li>$1</li>');
-  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
-  html = html.replace(/<\/ul>\s*<ul>/g, '');
+  for (const rawLine of lines) {
+    if (rawLine.trim().startsWith('```')) {
+      closeList();
+      if (!inCode) {
+        inCode = true;
+        codeLines = [];
+      } else {
+        closeCode();
+      }
+      continue;
+    }
 
-  const blockTags = /<(h[1-6]|ul|pre|blockquote)[^>]*>/;
-  html = html
-    .split(/\n{2,}/)
-    .map((block) => {
-      const trimmed = block.trim();
-      if (!trimmed) return '';
-      if (blockTags.test(trimmed)) return trimmed;
-      return `<p>${trimmed.replace(/\n/g, '<br />')}</p>`;
-    })
-    .join('');
+    if (inCode) {
+      codeLines.push(escapeHtml(rawLine));
+      continue;
+    }
 
+    const heading = rawLine.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      closeList();
+      const level = heading[1].length;
+      html += `<h${level}>${formatInlineMarkdown(heading[2])}</h${level}>`;
+      continue;
+    }
+
+    const listItem = rawLine.match(/^\s*-\s+(.*)$/);
+    if (listItem) {
+      if (!inList) {
+        html += '<ul>';
+        inList = true;
+      }
+      html += `<li>${formatInlineMarkdown(listItem[1])}</li>`;
+      continue;
+    }
+
+    if (!rawLine.trim()) {
+      closeList();
+      continue;
+    }
+
+    closeList();
+    html += `<p>${formatInlineMarkdown(rawLine)}</p>`;
+  }
+
+  closeList();
+  closeCode();
   return html;
 }
 
@@ -380,9 +433,11 @@ function bindReadmeDetails() {
       }
 
       try {
+        const safeReadmeUrl = sanitizeUrl(doc.htmlUrl);
+        const safeReadmePath = escapeHtml(doc.path);
         panel.innerHTML = `
           <div class="readme-source">
-            <a href="${doc.htmlUrl}" target="_blank" rel="noreferrer">${sourceText}: ${doc.path}</a>
+            <a href="${safeReadmeUrl}" target="_blank" rel="noreferrer">${sourceText}: ${safeReadmePath}</a>
           </div>
           <div class="readme-content">${renderMarkdown(doc.markdown)}</div>
         `;
