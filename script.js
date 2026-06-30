@@ -193,9 +193,13 @@ async function apiFetchJson(url, options = {}) {
       ...options,
       headers: mergeHeaders({ Accept: 'application/vnd.github+json' }, options.headers)
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn('GitHub JSON fetch failed:', response.status, url);
+      return null;
+    }
     return await response.json();
-  } catch {
+  } catch (error) {
+    console.warn('GitHub JSON fetch error:', url, error);
     return null;
   }
 }
@@ -203,9 +207,13 @@ async function apiFetchJson(url, options = {}) {
 async function apiFetchText(url, options = {}) {
   try {
     const response = await fetch(url, options);
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn('Text fetch failed:', response.status, url);
+      return null;
+    }
     return await response.text();
-  } catch {
+  } catch (error) {
+    console.warn('Text fetch error:', url, error);
     return null;
   }
 }
@@ -364,6 +372,15 @@ function rewriteRenderedMarkdownUrls(html, repo, doc) {
   const branch = extractBranchFromHtmlUrl(doc.htmlUrl, repo);
   const currentPath = doc.path;
 
+  wrapper.querySelectorAll('script, iframe, object, embed, form').forEach((element) => element.remove());
+  wrapper.querySelectorAll('*').forEach((element) => {
+    [...element.attributes].forEach((attribute) => {
+      if (/^on/i.test(attribute.name) || attribute.name === 'srcdoc') {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+
   wrapper.querySelectorAll('a[href]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     if (!href) return;
@@ -401,7 +418,7 @@ function rewriteRenderedMarkdownUrls(html, repo, doc) {
 }
 
 async function renderGitHubMarkdown(markdown, repo, doc) {
-  const cacheKey = `${repo}:${doc.path}`;
+  const cacheKey = `${repo}:${doc.path}:${String(markdown || '').length}:${String(markdown || '').slice(0, 48)}`;
   if (cacheKey in cachedRenderedMarkdownMap) return cachedRenderedMarkdownMap[cacheKey];
 
   const rendered = await apiFetchText(`${API}/markdown`, {
