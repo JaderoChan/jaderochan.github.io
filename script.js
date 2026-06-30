@@ -300,12 +300,17 @@ async function resolveReadmePath(repo, lang) {
   const cacheKey = `${repo}:${lang}`;
   if (cacheKey in cachedReadmePathMap) return cachedReadmePathMap[cacheKey];
 
-  const treeData = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/git/trees/HEAD?recursive=1`);
-  const readmePaths = Array.isArray(treeData?.tree)
-    ? treeData.tree
-      .filter((item) => item?.type === 'blob' && /^readme(\..+)?$/i.test((item.path || '').split('/').pop() || ''))
-      .map((item) => item.path)
-    : [];
+  const readmePaths = [];
+  for (const dir of ['', 'doc', 'docs']) {
+    const suffix = dir ? `/${encodeContentPath(dir)}` : '';
+    const entries = await apiFetch(`${API}/repos/${GITHUB_USER}/${repo}/contents${suffix}`);
+    if (!Array.isArray(entries)) continue;
+    entries
+      .filter((item) => item?.type === 'file' && /^readme(\..+)?$/i.test(item.name || ''))
+      .forEach((item) => {
+        if (item.path) readmePaths.push(item.path);
+      });
+  }
 
   const preferredPath = pickPreferredReadmePath(readmePaths, lang);
   if (preferredPath) {
