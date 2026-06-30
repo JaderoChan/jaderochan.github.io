@@ -3,27 +3,16 @@ const CONTACT_EMAIL = 'c_dl_cn@outlook.com';
 const API = 'https://api.github.com';
 const README_PATH_CANDIDATES = {
   zh: [
-    'README.zh-CN.md',
-    'README_zh.md',
-    'README.zh.md',
-    'README-cn.md',
-    'README_CN.md',
-    'docs/README.zh-CN.md',
-    'docs/README_zh.md',
-    'docs/README.zh.md',
-    'doc/README.zh-CN.md',
-    'doc/README_zh.md',
-    'doc/README.zh.md'
+    'README_ZH.md',
+    'doc/README_ZH.md',
+    'docs/README_ZH.md'
   ],
   en: [
-    'README.en.md',
-    'README_en.md',
-    'docs/README.en.md',
-    'docs/README_en.md',
-    'doc/README.en.md',
-    'doc/README_en.md'
+    'README_EN.md',
+    'doc/README_EN.md',
+    'docs/README_EN.md'
   ],
-  fallback: ['README.md', 'docs/README.md', 'doc/README.md']
+  fallback: ['README.md']
 };
 
 const projects = [
