@@ -94,6 +94,7 @@ const state = {
 let cachedUser = null;
 let cachedRepoMap = {};
 let cachedCommits = {};
+let cachedLastYearCommits = null;
 
 async function apiFetch(url) {
   try {
@@ -121,6 +122,23 @@ async function getCommitCount(repo) {
   }
 }
 
+async function getLastYearCommitCount() {
+  try {
+    const since = new Date();
+    since.setFullYear(since.getFullYear() - 1);
+    const sinceDate = since.toISOString().slice(0, 10);
+    const query = encodeURIComponent(`author:${GITHUB_USER} committer-date:>=${sinceDate}`);
+    const res = await fetch(`${API}/search/commits?q=${query}&per_page=1`, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return typeof data?.total_count === 'number' ? data.total_count : null;
+  } catch {
+    return null;
+  }
+}
+
 function fmt(n) {
   if (n === null || n === undefined) return '—';
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
@@ -137,8 +155,9 @@ function renderStats() {
   const tiles = [
     { icon: '📦', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos' },
     { icon: '🧑‍🤝‍🧑', val: fmt(cachedUser?.followers), label: isZh ? '关注者' : 'Followers' },
+    { icon: '📅', val: fmt(cachedLastYearCommits), label: isZh ? '近一年提交' : 'Last Year Commits' },
     { icon: '⭐', val: fmt(totalStars), label: isZh ? '精选星标' : 'Featured Stars' },
-    { icon: '🔀', val: fmt(totalForks), label: isZh ? '精选分叉' : 'Featured Forks' }
+    { icon: '🔀', val: fmt(totalForks), label: 'Fork' }
   ];
 
   grid.innerHTML = tiles.map((t) => `
@@ -163,7 +182,7 @@ function renderProjects() {
     const commits = fmt(cachedCommits[p.repo]);
     const desc = isZh ? p.zh : p.en;
     const languageBadge = `<img class="shield-badge" src="https://img.shields.io/github/languages/top/${GITHUB_USER}/${p.repo}?style=flat-square" alt="${isZh ? '语言' : 'Language'}: ${lang}" loading="lazy" />`;
-    const versionBadge = `<img class="shield-badge" src="https://img.shields.io/github/v/release/${GITHUB_USER}/${p.repo}?style=flat-square" alt="${isZh ? '版本' : 'Version'}" loading="lazy" />`;
+    const versionBadge = `<img class="shield-badge" src="https://img.shields.io/github/v/tag/${GITHUB_USER}/${p.repo}?style=flat-square&sort=semver" alt="${isZh ? '版本' : 'Version'}" loading="lazy" />`;
 
     const ssHtml = p.screenshot ? `
       <div class="project-screenshot-wrap">
@@ -179,7 +198,7 @@ function renderProjects() {
             ${languageBadge}
             ${versionBadge}
             <span class="badge">⭐ ${stars}</span>
-            <span class="badge">🔀 ${forks}</span>
+            <span class="badge">🔀 Fork ${forks}</span>
             <span class="badge">🧾 ${commits} ${commitLabel}</span>
           </div>
         </div>
@@ -209,11 +228,13 @@ async function loadData() {
   }
   renderAll();
 
-  const commitResults = await Promise.all(
-    projects.map(async (p) => [p.repo, await getCommitCount(p.repo)])
-  );
+  const [commitResults, lastYearCommits] = await Promise.all([
+    Promise.all(projects.map(async (p) => [p.repo, await getCommitCount(p.repo)])),
+    getLastYearCommitCount()
+  ]);
 
   cachedCommits = Object.fromEntries(commitResults);
+  cachedLastYearCommits = lastYearCommits;
   renderAll();
 }
 
