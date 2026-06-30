@@ -664,7 +664,7 @@ function renderProjects() {
   if (!list) return;
 
   const isZh = state.lang === 'zh';
-  const commitLabel = isZh ? '提交' : 'Commits';
+  const commitLabel = isZh ? '次提交' : 'commits';
   const forkLabel = 'Forks';
   const readmeTitle = isZh ? 'README 详情' : 'README Details';
   const readmeHint = isZh ? '点击展开后自动加载项目 README' : 'Expand to load the project README';
