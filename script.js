@@ -2,6 +2,9 @@ const GITHUB_USER = 'JaderoChan';
 const CONTACT_EMAIL = 'c_dl_cn@outlook.com';
 const API = 'https://api.github.com';
 const MY_BASE_REPO = 'MyBase';
+const STATS_SNAPSHOT_URL = './assets/github-stats.json';
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_PREFIX = 'jadero:gh:';
 const ICONS = {
   repos: './assets/repos.png',
   people: './assets/people.png',
@@ -212,7 +215,50 @@ function mergeHeaders(defaultHeaders, customHeaders) {
   return { ...defaultHeaders, ...(customHeaders || {}) };
 }
 
+function readCache(key) {
+  try {
+    const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    if (Date.now() > Number(parsed.expiresAt || 0)) return null;
+    return parsed.value;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key, value, ttlMs = CACHE_TTL_MS) {
+  try {
+    localStorage.setItem(
+      `${CACHE_PREFIX}${key}`,
+      JSON.stringify({
+        expiresAt: Date.now() + ttlMs,
+        value
+      })
+    );
+  } catch {
+    // Ignore storage quota and serialization failures.
+  }
+}
+
+function buildFetchCacheKey(url, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const headers = options.headers ? JSON.stringify(options.headers) : '';
+  const body = typeof options.body === 'string' ? options.body : '';
+  return `${method}:${url}:${headers}:${body}`;
+}
+
 async function apiFetchJson(url, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const canUseCache = method === 'GET';
+  const cacheKey = canUseCache ? buildFetchCacheKey(url, options) : '';
+
+  if (canUseCache) {
+    const cached = readCache(cacheKey);
+    if (cached !== null) return cached;
+  }
+
   try {
     const response = await fetch(url, {
       ...options,
@@ -220,11 +266,25 @@ async function apiFetchJson(url, options = {}) {
     });
     if (!response.ok) {
       console.warn('GitHub JSON fetch failed:', response.status, url);
+      if (canUseCache) {
+        const stale = readCache(`${cacheKey}:stale`);
+        if (stale !== null) return stale;
+      }
       return null;
     }
-    return await response.json();
+
+    const data = await response.json();
+    if (canUseCache) {
+      writeCache(cacheKey, data, CACHE_TTL_MS);
+      writeCache(`${cacheKey}:stale`, data, 7 * 24 * 60 * 60 * 1000);
+    }
+    return data;
   } catch (error) {
     console.warn('GitHub JSON fetch error:', url, error);
+    if (canUseCache) {
+      const stale = readCache(`${cacheKey}:stale`);
+      if (stale !== null) return stale;
+    }
     return null;
   }
 }
@@ -244,22 +304,43 @@ async function apiFetchText(url, options = {}) {
 }
 
 async function getCommitCount(repo) {
+  const cacheKey = `commit-count:${repo}`;
+  const cached = readCache(cacheKey);
+  if (cached !== null) return cached;
+
   try {
-    const response = await fetch(`${API}/repos/${GITHUB_USER}/${repo}/commits?per_page=1`);
-    if (!response.ok) return null;
+    const response = await fetch(`${API}/repos/${GITHUB_USER}/${repo}/commits?per_page=1`, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!response.ok) {
+      const stale = readCache(`${cacheKey}:stale`);
+      return stale !== null ? stale : null;
+    }
+
     const link = response.headers.get('Link');
+    let count = 0;
     if (!link) {
       const data = await response.json();
-      return Array.isArray(data) ? data.length : null;
+      count = Array.isArray(data) ? data.length : 0;
+    } else {
+      const match = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
+      count = match ? parseInt(match[1], 10) : 1;
     }
-    const match = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
-    return match ? parseInt(match[1], 10) : 1;
+
+    writeCache(cacheKey, count, CACHE_TTL_MS);
+    writeCache(`${cacheKey}:stale`, count, 7 * 24 * 60 * 60 * 1000);
+    return count;
   } catch {
-    return null;
+    const stale = readCache(`${cacheKey}:stale`);
+    return stale !== null ? stale : null;
   }
 }
 
 async function getLastYearCommitCount() {
+  const cacheKey = 'last-year-commits';
+  const cached = readCache(cacheKey);
+  if (cached !== null) return cached;
+
   try {
     const now = new Date();
     const targetYear = now.getUTCFullYear() - 1;
@@ -269,14 +350,61 @@ async function getLastYearCommitCount() {
     const safeDay = Math.min(targetDay, maxDayInTargetMonth);
     const sinceDate = new Date(Date.UTC(targetYear, targetMonth, safeDay)).toISOString().slice(0, 10);
     const query = encodeURIComponent(`author:${GITHUB_USER} committer-date:>=${sinceDate}`);
-    const response = await fetch(`${API}/search/commits?q=${query}&per_page=1`, {
-      headers: { Accept: 'application/vnd.github+json' }
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return typeof data?.total_count === 'number' ? data.total_count : null;
+    const data = await apiFetchJson(`${API}/search/commits?q=${query}&per_page=1`);
+    const count = typeof data?.total_count === 'number' ? data.total_count : null;
+    if (count !== null) {
+      writeCache(cacheKey, count, CACHE_TTL_MS);
+      writeCache(`${cacheKey}:stale`, count, 7 * 24 * 60 * 60 * 1000);
+    }
+    return count;
   } catch {
     return null;
+  }
+}
+
+function applyStatsSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return;
+
+  if (snapshot.user && typeof snapshot.user === 'object') {
+    cachedUser = {
+      ...(cachedUser || {}),
+      ...snapshot.user
+    };
+  }
+
+  if (snapshot.repos && typeof snapshot.repos === 'object') {
+    for (const [repoName, repoData] of Object.entries(snapshot.repos)) {
+      cachedRepoMap[repoName] = {
+        ...(cachedRepoMap[repoName] || {}),
+        ...(repoData || {}),
+        name: repoName
+      };
+    }
+  }
+
+  if (snapshot.commits && typeof snapshot.commits === 'object') {
+    cachedCommits = {
+      ...cachedCommits,
+      ...snapshot.commits
+    };
+  }
+
+  if (typeof snapshot.lastYearCommits === 'number') {
+    cachedLastYearCommits = snapshot.lastYearCommits;
+  }
+}
+
+async function loadStatsSnapshot() {
+  try {
+    const response = await fetch(STATS_SNAPSHOT_URL, { cache: 'no-store' });
+    if (!response.ok) return null;
+    const data = await response.json();
+    writeCache('stats-snapshot', data, CACHE_TTL_MS);
+    writeCache('stats-snapshot:stale', data, 7 * 24 * 60 * 60 * 1000);
+    return data;
+  } catch {
+    const stale = readCache('stats-snapshot:stale');
+    return stale || null;
   }
 }
 
@@ -284,6 +412,16 @@ function fmt(value) {
   if (value === null || value === undefined) return '—';
   if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
   return String(value);
+}
+
+function sumFeaturedMetric(metric) {
+  let total = 0;
+  for (const project of featuredProjects) {
+    const value = cachedRepoMap[project.repo]?.[metric];
+    if (typeof value !== 'number') return null;
+    total += value;
+  }
+  return total;
 }
 
 function escapeHtml(text) {
@@ -619,8 +757,8 @@ function renderStats() {
   if (!grid) return;
 
   const isZh = state.lang === 'zh';
-  const totalStars = featuredProjects.reduce((sum, project) => sum + (cachedRepoMap[project.repo]?.stargazers_count || 0), 0);
-  const totalForks = featuredProjects.reduce((sum, project) => sum + (cachedRepoMap[project.repo]?.forks_count || 0), 0);
+  const totalStars = sumFeaturedMetric('stargazers_count');
+  const totalForks = sumFeaturedMetric('forks_count');
 
   const tiles = [
     { icon: ICONS.repos, iconAlt: isZh ? '仓库图标' : 'repos icon', val: fmt(cachedUser?.public_repos), label: isZh ? '公开仓库' : 'Public Repos' },
@@ -864,6 +1002,12 @@ function renderAll() {
 
 async function loadData() {
   renderAll();
+
+  const snapshot = await loadStatsSnapshot();
+  if (snapshot) {
+    applyStatsSnapshot(snapshot);
+    renderAll();
+  }
 
   const [user, allRepos] = await Promise.all([
     apiFetchJson(`${API}/users/${GITHUB_USER}`),

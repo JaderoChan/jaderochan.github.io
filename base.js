@@ -1,6 +1,8 @@
 const GITHUB_USER = 'JaderoChan';
 const API = 'https://api.github.com';
 const MY_BASE_REPO = 'MyBase';
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_PREFIX = 'jadero:gh:base:';
 
 const myBaseModules = [
   {
@@ -81,15 +83,74 @@ function mergeHeaders(defaultHeaders, customHeaders) {
   return { ...defaultHeaders, ...(customHeaders || {}) };
 }
 
+function readCache(key) {
+  try {
+    const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    if (Date.now() > Number(parsed.expiresAt || 0)) return null;
+    return parsed.value;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key, value, ttlMs = CACHE_TTL_MS) {
+  try {
+    localStorage.setItem(
+      `${CACHE_PREFIX}${key}`,
+      JSON.stringify({
+        expiresAt: Date.now() + ttlMs,
+        value
+      })
+    );
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function buildFetchCacheKey(url, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const headers = options.headers ? JSON.stringify(options.headers) : '';
+  const body = typeof options.body === 'string' ? options.body : '';
+  return `${method}:${url}:${headers}:${body}`;
+}
+
 async function apiFetchJson(url, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const canUseCache = method === 'GET';
+  const cacheKey = canUseCache ? buildFetchCacheKey(url, options) : '';
+
+  if (canUseCache) {
+    const cached = readCache(cacheKey);
+    if (cached !== null) return cached;
+  }
+
   try {
     const response = await fetch(url, {
       ...options,
       headers: mergeHeaders({ Accept: 'application/vnd.github+json' }, options.headers)
     });
-    if (!response.ok) return null;
-    return await response.json();
+    if (!response.ok) {
+      if (canUseCache) {
+        const stale = readCache(`${cacheKey}:stale`);
+        if (stale !== null) return stale;
+      }
+      return null;
+    }
+
+    const data = await response.json();
+    if (canUseCache) {
+      writeCache(cacheKey, data, CACHE_TTL_MS);
+      writeCache(`${cacheKey}:stale`, data, 7 * 24 * 60 * 60 * 1000);
+    }
+    return data;
   } catch {
+    if (canUseCache) {
+      const stale = readCache(`${cacheKey}:stale`);
+      if (stale !== null) return stale;
+    }
     return null;
   }
 }
@@ -168,28 +229,17 @@ async function getRepoContent(repo, path = '') {
 
 async function buildModuleItems(entries) {
   const visibleEntries = entries.filter((entry) => entry && !String(entry.name || '').startsWith('.'));
-  const items = await Promise.all(visibleEntries.map(async (entry) => {
-    let nestedNames = [];
-    let nestedCount = 0;
-    if (entry.type === 'dir') {
-      const nested = await getRepoContent(MY_BASE_REPO, entry.path);
-      if (Array.isArray(nested)) {
-        const cleaned = nested.filter((child) => child && !String(child.name || '').startsWith('.'));
-        nestedCount = cleaned.length;
-        nestedNames = cleaned.slice(0, 6).map((child) => child.name);
-      }
-    }
-
+  const items = visibleEntries.map((entry) => {
     return {
       name: entry.name,
       path: entry.path,
       type: entry.type,
       htmlUrl: entry.html_url || '#',
       previewType: inferPreviewType(entry),
-      nestedNames,
-      nestedCount
+      nestedNames: [],
+      nestedCount: 0
     };
-  }));
+  });
 
   return items.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
 }

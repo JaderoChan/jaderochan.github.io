@@ -3,6 +3,8 @@ const GITHUB_REPO = 'jaderochan.github.io';
 const GALLERY_DIR = 'gallery';
 const DESCRIPTIONS_FILE = `${GALLERY_DIR}/descriptions.json`;
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|avif)$/i;
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_PREFIX = 'jadero:gh:gallery:';
 
 const state = {
   lang: localStorage.getItem('lang') || 'zh',
@@ -32,20 +34,63 @@ function isImageFile(fileName) {
   return IMAGE_EXTENSIONS.test(fileName);
 }
 
-async function fetchGalleryFileNames() {
-  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GALLERY_DIR)}?ref=main`;
-  const response = await fetch(apiUrl, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Failed to load gallery directory: ${response.status}`);
+function readCache(key) {
+  try {
+    const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    if (Date.now() > Number(parsed.expiresAt || 0)) return null;
+    return parsed.value;
+  } catch {
+    return null;
   }
+}
 
-  const entries = await response.json();
-  if (!Array.isArray(entries)) return [];
+function writeCache(key, value, ttlMs = CACHE_TTL_MS) {
+  try {
+    localStorage.setItem(
+      `${CACHE_PREFIX}${key}`,
+      JSON.stringify({
+        expiresAt: Date.now() + ttlMs,
+        value
+      })
+    );
+  } catch {
+    // Ignore storage failures.
+  }
+}
 
-  return entries
-    .filter((entry) => entry && entry.type === 'file' && isImageFile(entry.name))
-    .map((entry) => entry.name)
-    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
+async function fetchGalleryFileNames() {
+  const cacheKey = 'gallery-file-names';
+  const cached = readCache(cacheKey);
+  if (Array.isArray(cached)) return cached;
+
+  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GALLERY_DIR)}?ref=main`;
+  try {
+    const response = await fetch(apiUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      const stale = readCache(`${cacheKey}:stale`);
+      if (Array.isArray(stale)) return stale;
+      throw new Error(`Failed to load gallery directory: ${response.status}`);
+    }
+
+    const entries = await response.json();
+    if (!Array.isArray(entries)) return [];
+
+    const fileNames = entries
+      .filter((entry) => entry && entry.type === 'file' && isImageFile(entry.name))
+      .map((entry) => entry.name)
+      .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
+
+    writeCache(cacheKey, fileNames, CACHE_TTL_MS);
+    writeCache(`${cacheKey}:stale`, fileNames, 7 * 24 * 60 * 60 * 1000);
+    return fileNames;
+  } catch {
+    const stale = readCache(`${cacheKey}:stale`);
+    if (Array.isArray(stale)) return stale;
+    throw new Error('Failed to load gallery directory.');
+  }
 }
 
 async function fetchDescriptions() {
