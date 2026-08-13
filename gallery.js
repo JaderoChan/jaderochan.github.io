@@ -3,6 +3,7 @@ const GITHUB_REPO = 'jaderochan.github.io';
 const GALLERY_DIR = 'gallery';
 const DESCRIPTIONS_FILE = `${GALLERY_DIR}/descriptions.json`;
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|avif)$/i;
+const AVIF_WIDTHS = [480, 800, 1200, 1800];
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const CACHE_PREFIX = 'jadero:gh:gallery:';
 
@@ -14,6 +15,20 @@ const state = {
 
 function imageUrl(fileName) {
   return `./${GALLERY_DIR}/${encodeURIComponent(fileName)}`;
+}
+
+function imageStem(fileName) {
+  const dotIndex = fileName.lastIndexOf('.');
+  return dotIndex >= 0 ? fileName.slice(0, dotIndex) : fileName;
+}
+
+function avifUrlForWidth(fileName, width) {
+  const stem = imageStem(fileName);
+  return `./${GALLERY_DIR}/${encodeURIComponent(`${stem}-${width}.avif`)}`;
+}
+
+function responsiveAvifSrcset(fileName) {
+  return AVIF_WIDTHS.map((width) => `${avifUrlForWidth(fileName, width)} ${width}w`).join(', ');
 }
 
 function escapeHtml(text) {
@@ -133,7 +148,10 @@ function renderGallery() {
 
     return `
       <figure class="gallery-card" data-gallery-index="${index}">
-        <img class="gallery-card-image" src="${imageUrl(item.file)}" alt="${escapeHtml(altText)}" loading="lazy" />
+        <picture>
+          <source type="image/avif" srcset="${responsiveAvifSrcset(item.file)}" sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw" />
+          <img class="gallery-card-image" src="${imageUrl(item.file)}" alt="${escapeHtml(altText)}" loading="lazy" decoding="async" />
+        </picture>
         ${captionHtml}
       </figure>
     `;
@@ -157,7 +175,7 @@ function openLightbox(index) {
   const captionNode = document.getElementById('lightboxCaption');
   if (!lightbox || !image || !captionNode) return;
 
-  image.src = imageUrl(item.file);
+  image.src = avifUrlForWidth(item.file, 1800);
   image.alt = caption || item.file;
   captionNode.textContent = caption;
   captionNode.style.display = caption ? '' : 'none';

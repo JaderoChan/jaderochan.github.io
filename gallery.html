@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gallery · 頔珞 JaderoChan Website</title>
   <meta name="description" content="Photo gallery of JaderoChan in masonry layout." />
-  <link rel="icon" href="https://github.com/JaderoChan.png" type="image/png" />
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -15,7 +15,6 @@
         <a class="brand" href="./index.html">頔珞 JaderoChan Website</a>
         <nav class="nav-links" aria-label="Primary">
           <a class="nav-link" href="./index.html"><span class="zh">主页</span><span class="en lang-hidden">Home</span></a>
-          <a class="nav-link" href="./base.html"><span class="zh">基</span><span class="en lang-hidden">Base</span></a>
           <a class="nav-link nav-link-active" href="./gallery.html"><span class="zh">画廊</span><span class="en lang-hidden">Gallery</span></a>
         </nav>
       </div>
@@ -48,5 +47,12 @@
   </footer>
 
   <script src="./gallery.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

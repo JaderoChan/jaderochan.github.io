@@ -5,13 +5,14 @@ const MY_BASE_REPO = 'MyBase';
 const STATS_SNAPSHOT_URL = './assets/github-stats.json';
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const CACHE_PREFIX = 'jadero:gh:';
+const ASSET_CACHE_PREFIX = 'jadero:asset:';
 const ICONS = {
-  repos: './assets/repos.png',
-  people: './assets/people.png',
-  commit: './assets/commit.png',
-  star: './assets/star.png',
-  fork: './assets/fork.png',
-  email: './assets/email.png'
+  repos: './assets/repos.svg',
+  people: './assets/people.svg',
+  commit: './assets/commit.svg',
+  star: './assets/star.svg',
+  fork: './assets/fork.svg',
+  email: './assets/email.svg'
 };
 
 const featuredProjects = [
@@ -459,6 +460,40 @@ function hashText(text) {
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(16);
+}
+
+async function hydrateIconsFromCache() {
+  for (const [key, originalUrl] of Object.entries(ICONS)) {
+    try {
+      const cacheKey = `${ASSET_CACHE_PREFIX}${originalUrl}`;
+      const cached = readCache(cacheKey);
+      const response = await fetch(originalUrl, { cache: 'no-store' });
+      if (!response.ok) {
+        if (cached && cached.dataUrl) {
+          ICONS[key] = cached.dataUrl;
+        }
+        continue;
+      }
+
+      const text = await response.text();
+      const contentHash = hashText(text);
+      const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(text)}`;
+      const entry = { contentHash, dataUrl, url: originalUrl };
+
+      if (cached && cached.contentHash === contentHash && cached.dataUrl) {
+        ICONS[key] = cached.dataUrl;
+        continue;
+      }
+
+      writeCache(cacheKey, entry, 30 * 24 * 60 * 60 * 1000);
+      ICONS[key] = dataUrl;
+    } catch {
+      const cached = readCache(`${ASSET_CACHE_PREFIX}${originalUrl}`);
+      if (cached && cached.dataUrl) {
+        ICONS[key] = cached.dataUrl;
+      }
+    }
+  }
 }
 
 function splitTargetSuffix(target) {
@@ -1001,6 +1036,7 @@ function renderAll() {
 }
 
 async function loadData() {
+  await hydrateIconsFromCache();
   renderAll();
 
   const snapshot = await loadStatsSnapshot();
@@ -1046,6 +1082,12 @@ function setupEmail() {
   if (!emailLink) return;
   emailLink.href = `mailto:${CONTACT_EMAIL}`;
   emailLink.innerHTML = `<img class="icon-img" src="${ICONS.email}" alt="email icon" /> ${CONTACT_EMAIL}`;
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
 }
 
 document.getElementById('langBtn').addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
