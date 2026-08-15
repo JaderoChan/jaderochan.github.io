@@ -1,5 +1,4 @@
 /* ===== Knowledge Notes page ===== */
-const GITHUB_API = 'https://api.github.com';
 const KN_PREFIX = 'jadero:kn:';
 
 // --- State helpers (sessionStorage) ---
@@ -70,24 +69,27 @@ async function renderMarkdown(text) {
   const ssKey = 'jadero:md:' + key;
   try { const s = sessionStorage.getItem(ssKey); if (s) { mdCache[key] = s; return s; } } catch {}
 
-  try {
-    const r = await fetch(GITHUB_API + '/markdown', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'text/html' },
-      body: JSON.stringify({ text, mode: 'markdown' })
-    });
-    if (r.ok) {
-      const raw = await r.text();
-      const html = sanitizeRenderedHtml(raw);
-      mdCache[key] = html;
-      try { sessionStorage.setItem(ssKey, html); } catch {}
-      return html;
-    }
-  } catch {}
+  const raw = typeof marked !== 'undefined'
+    ? marked.parse(String(text || ''))
+    : '<pre><code>' + escapeHtml(text) + '</code></pre>';
+  const html = sanitizeRenderedHtml(raw);
+  mdCache[key] = html;
+  try { sessionStorage.setItem(ssKey, html); } catch {}
+  return html;
+}
 
-  const fallback = '<pre><code>' + escapeHtml(text) + '</code></pre>';
-  mdCache[key] = fallback;
-  return fallback;
+function renderMath(el) {
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(el, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$',  right: '$',  display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
 }
 
 // Resolve a relative link href against the current file's path within knowledge_notes/
@@ -221,6 +223,7 @@ async function displayFile(filepath, pushToStack) {
   if (renderedPageCache[filepath]) {
     content.innerHTML = renderedPageCache[filepath];
     bindInternalLinks(content, filepath);
+    renderMath(content);
     restoreScrollPos(filepath);
     bindScrollSave(filepath);
     return;
@@ -241,6 +244,7 @@ async function displayFile(filepath, pushToStack) {
   renderedPageCache[filepath] = wrapped;
   content.innerHTML = wrapped;
   bindInternalLinks(content, filepath);
+  renderMath(content);
   restoreScrollPos(filepath);
   bindScrollSave(filepath);
 }

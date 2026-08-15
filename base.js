@@ -1,5 +1,4 @@
 /* ===== Base page ===== */
-const GITHUB_API = 'https://api.github.com';
 const BS_PREFIX = 'jadero:base:';
 
 // --- State helpers (sessionStorage) ---
@@ -84,24 +83,27 @@ async function renderMarkdown(text) {
     if (stored) { mdCache[key] = stored; return stored; }
   } catch {}
 
-  try {
-    const r = await fetch(GITHUB_API + '/markdown', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'text/html' },
-      body: JSON.stringify({ text, mode: 'markdown' })
-    });
-    if (r.ok) {
-      const raw = await r.text();
-      const html = sanitizeRenderedHtml(raw);
-      mdCache[key] = html;
-      try { sessionStorage.setItem(ssKey, html); } catch {}
-      return html;
-    }
-  } catch {}
+  const raw = typeof marked !== 'undefined'
+    ? marked.parse(String(text || ''))
+    : '<pre><code>' + escapeHtml(text) + '</code></pre>';
+  const html = sanitizeRenderedHtml(raw);
+  mdCache[key] = html;
+  try { sessionStorage.setItem(ssKey, html); } catch {}
+  return html;
+}
 
-  const fallback = '<pre><code>' + escapeHtml(text) + '</code></pre>';
-  mdCache[key] = fallback;
-  return fallback;
+function renderMath(el) {
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(el, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$',  right: '$',  display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
 }
 
 // File content cache
@@ -194,6 +196,7 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   const cacheKey = cachePrefix + ':' + tabId;
   if (fileCache[cacheKey]) {
     content.innerHTML = fileCache[cacheKey];
+    renderMath(content);
     _applyScrollAfterLoad(content, bGet('scroll:' + contentId + ':' + tabId, 0));
     bindBaseScroll(contentId, tabId);
     return;
@@ -211,6 +214,7 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   const wrapped = '<div class="md-content">' + html + '</div>';
   fileCache[cacheKey] = wrapped;
   content.innerHTML = wrapped;
+  renderMath(content);
   _applyScrollAfterLoad(content, bGet('scroll:' + contentId + ':' + tabId, 0));
   bindBaseScroll(contentId, tabId);
 }
