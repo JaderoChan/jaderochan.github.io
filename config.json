@@ -2,7 +2,7 @@
   "github_user": "JaderoChan",
   "cache": {
     "update_interval_hours": 6,
-    "skip_unchanged": false
+    "skip_unchanged": true
   },
   "featured_projects": [
     {
