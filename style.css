@@ -12,7 +12,13 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, .25);
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: rgba(122, 162, 255, 0.25) transparent; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(122, 162, 255, 0.28); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(122, 162, 255, 0.52); }
+::-webkit-scrollbar-corner { background: transparent; }
 
 html { scroll-behavior: smooth; }
 
@@ -828,7 +834,6 @@ footer { padding: 28px 0 42px; color: var(--text-soft); font-size: 14px; }
   overflow-x: auto;
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
-  scrollbar-width: thin;
 }
 
 .base-tab-btn {
