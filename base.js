@@ -1,6 +1,5 @@
 /* ===== Base page ===== */
 const BS_PREFIX = 'jadero:base:';
-const BS_LOAD_TOKEN = Math.random().toString(36).slice(2);
 
 // --- State helpers (sessionStorage) ---
 function bGet(key, def) {
@@ -12,19 +11,6 @@ function bGet(key, def) {
 function bSet(key, val) {
   try { sessionStorage.setItem(BS_PREFIX + key, JSON.stringify(val)); } catch {}
 }
-
-// Clear stale scroll positions on every fresh page load (including refresh)
-;(function() {
-  if (sessionStorage.getItem(BS_PREFIX + 'loadToken') !== BS_LOAD_TOKEN) {
-    const toRemove = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const k = sessionStorage.key(i);
-      if (k && k.startsWith(BS_PREFIX + 'scroll:')) toRemove.push(k);
-    }
-    toRemove.forEach(k => sessionStorage.removeItem(k));
-    sessionStorage.setItem(BS_PREFIX + 'loadToken', BS_LOAD_TOKEN);
-  }
-})();
 
 // --- Language ---
 let currentLang = localStorage.getItem('lang') || 'zh';
