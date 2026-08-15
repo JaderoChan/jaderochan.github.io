@@ -45,8 +45,18 @@ function escapeHtml(text) {
 }
 
 function normalizeDescription(value) {
-  if (typeof value !== 'string') return '';
-  return value.trim();
+  if (!value || typeof value === 'string') {
+    const s = typeof value === 'string' ? value.trim() : '';
+    return { zh: s, en: s };
+  }
+  return {
+    zh: typeof value.zh === 'string' ? value.zh.trim() : '',
+    en: typeof value.en === 'string' ? value.en.trim() : ''
+  };
+}
+
+function resolveDescription(desc, lang) {
+  return (lang === 'zh' ? desc.zh : desc.en) || desc.zh || desc.en || '';
 }
 
 function isImageFile(fileName) {
@@ -152,7 +162,7 @@ function renderGallery() {
   }
 
   container.innerHTML = state.galleryItems.map((item, index) => {
-    const caption = item.description;
+    const caption = resolveDescription(item.description, state.lang);
     const altText = caption || item.file;
     const captionHtml = caption
       ? `<figcaption class="gallery-card-caption">${escapeHtml(caption)}</figcaption>`
@@ -187,7 +197,7 @@ function openLightbox(index) {
   const item = state.galleryItems[index];
   if (!item) return;
 
-  const caption = item.description;
+  const caption = resolveDescription(item.description, state.lang);
   const lightbox = document.getElementById('galleryLightbox');
   const image = document.getElementById('lightboxImage');
   const captionNode = document.getElementById('lightboxCaption');
@@ -217,6 +227,7 @@ function setLang(lang) {
   document.title = lang === 'zh' ? '頔珞 JaderoChan Website · 画廊' : '頔珞 JaderoChan Website · Gallery';
   document.querySelectorAll('.zh').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'zh'));
   document.querySelectorAll('.en').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'en'));
+  renderGallery();
 }
 
 async function initializeGallery() {
