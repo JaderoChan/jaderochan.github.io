@@ -173,14 +173,19 @@ function bindBaseScroll(contentId, tabId) {
 }
 function _applyScrollAfterLoad(el, target) {
   if (!target) return;
+  // generation counter: invalidates stale rAF/image-load callbacks after tab switch
+  const gen = (el._scrollGen = ((el._scrollGen || 0) + 1));
+  const apply = () => { if (el._scrollGen === gen) el.scrollTop = target; };
   const imgs = [...el.querySelectorAll('img')].filter(img => !img.complete);
-  if (!imgs.length) { requestAnimationFrame(() => { el.scrollTop = target; }); return; }
+  if (!imgs.length) { requestAnimationFrame(apply); return; }
   let n = imgs.length;
-  const done = () => { if (--n === 0) el.scrollTop = target; };
+  const done = () => { if (--n === 0) apply(); };
   imgs.forEach(img => { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); });
 }
 
+const _activeTabId = {};
 async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseUrl) {
+  _activeTabId[contentId] = tabId;
   const tab = tabs.find(item => item.id === tabId);
   if (!tab) return;
   const content = document.getElementById(contentId);
@@ -196,11 +201,13 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
 
   content.innerHTML = '<p class="base-status-text">' + t('加载中...', 'Loading...') + '</p>';
   const text = await fetchText(baseUrl + tab.filename);
+  if (_activeTabId[contentId] !== tabId) return;
   if (text === null) {
     content.innerHTML = '<p class="base-status-text">' + t('加载失败', 'Load failed') + '</p>';
     return;
   }
   const html = await renderMarkdown(text);
+  if (_activeTabId[contentId] !== tabId) return;
   const wrapped = '<div class="md-content">' + html + '</div>';
   fileCache[cacheKey] = wrapped;
   content.innerHTML = wrapped;

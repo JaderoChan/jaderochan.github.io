@@ -176,10 +176,13 @@ function saveScrollPos(filepath) {
 }
 function _applyScrollAfterLoad(el, target) {
   if (!target) return;
+  // generation counter: invalidates stale rAF/image-load callbacks after navigation
+  const gen = (el._scrollGen = ((el._scrollGen || 0) + 1));
+  const apply = () => { if (el._scrollGen === gen) el.scrollTop = target; };
   const imgs = [...el.querySelectorAll('img')].filter(img => !img.complete);
-  if (!imgs.length) { requestAnimationFrame(() => { el.scrollTop = target; }); return; }
+  if (!imgs.length) { requestAnimationFrame(apply); return; }
   let n = imgs.length;
-  const done = () => { if (--n === 0) el.scrollTop = target; };
+  const done = () => { if (--n === 0) apply(); };
   imgs.forEach(img => { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); });
 }
 function restoreScrollPos(filepath) {
@@ -226,12 +229,14 @@ async function displayFile(filepath, pushToStack) {
   content.innerHTML = '<div class="kn-placeholder">' + t('加载中...', 'Loading...') + '</div>';
 
   const text = await fetchText('./knowledge_notes/' + filepath);
+  if (_currentFilepath !== filepath) return;
   if (text === null) {
     content.innerHTML = '<div class="kn-placeholder">' + t('加载失败', 'Load failed') + '</div>';
     return;
   }
 
   const html = await renderMarkdown(text);
+  if (_currentFilepath !== filepath) return;
   const wrapped = '<div class="md-content">' + html + '</div>';
   renderedPageCache[filepath] = wrapped;
   content.innerHTML = wrapped;
