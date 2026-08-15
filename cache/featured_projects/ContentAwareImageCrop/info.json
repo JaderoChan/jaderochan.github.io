@@ -1,0 +1,23 @@
+{
+  "name": "ContentAwareImageCrop",
+  "stars": 1,
+  "forks": 0,
+  "language": "C++",
+  "language_breakdown": {
+    "C++": 97.1,
+    "CMake": 2.2,
+    "C": 0.6,
+    "Shell": 0.1
+  },
+  "commits": 176,
+  "has_release": true,
+  "latest_release": "v1.0.4",
+  "default_branch": "main",
+  "commit_hash": "76ab609d088601c83c2b41a7a7b280f200a6dfae",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": "assets/screenshot.jpg",
+  "updated_at": "2026-08-15T16:54:00.880Z"
+}

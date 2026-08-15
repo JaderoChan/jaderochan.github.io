@@ -1,0 +1,25 @@
+{
+  "name": "EasyLinks",
+  "stars": 2,
+  "forks": 0,
+  "language": "C++",
+  "language_breakdown": {
+    "C++": 90.4,
+    "CMake": 5,
+    "C": 3.1,
+    "Objective-C++": 0.8,
+    "Shell": 0.6,
+    "Batchfile": 0.2
+  },
+  "commits": 454,
+  "has_release": true,
+  "latest_release": "v1.4.18",
+  "default_branch": "main",
+  "commit_hash": "5f907b27e1e736e902992591b8e20125942f43ec",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": "assets/screenshot.jpg",
+  "updated_at": "2026-08-15T16:54:02.845Z"
+}

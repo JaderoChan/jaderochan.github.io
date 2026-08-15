@@ -1,0 +1,25 @@
+{
+  "name": "OpenCmdAnywhere",
+  "stars": 4,
+  "forks": 0,
+  "language": "C++",
+  "language_breakdown": {
+    "C++": 73.3,
+    "CMake": 13.3,
+    "Objective-C++": 5.9,
+    "C": 5.4,
+    "Shell": 1.5,
+    "Batchfile": 0.6
+  },
+  "commits": 131,
+  "has_release": true,
+  "latest_release": "v1.3.4",
+  "default_branch": "main",
+  "commit_hash": "bab1c36852e3904531472060ac8a86f1ce395094",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": null,
+  "updated_at": "2026-08-15T16:54:04.851Z"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "mcnbt",
+  "stars": 6,
+  "forks": 1,
+  "language": "C++",
+  "language_breakdown": {
+    "C++": 96.6,
+    "CMake": 3.4
+  },
+  "commits": 329,
+  "has_release": true,
+  "latest_release": "v2.1.0",
+  "default_branch": "main",
+  "commit_hash": "9568cb560950970cd5f5701400352aa76e76d5b8",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": null,
+  "updated_at": "2026-08-15T16:53:53.091Z"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Taylor-Series-compute-log",
+  "stars": 0,
+  "forks": 0,
+  "language": "C",
+  "language_breakdown": {
+    "C": 96,
+    "CMake": 4
+  },
+  "commits": 52,
+  "has_release": false,
+  "latest_release": null,
+  "default_branch": "main",
+  "commit_hash": "6a6756153991dd3599141019beaa5619d5f3b14f",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": null,
+  "updated_at": "2026-08-15T16:53:58.225Z"
+}
