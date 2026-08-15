@@ -6,6 +6,7 @@
   <title>頔珞 JaderoChan Website</title>
   <meta name="description" content="頔珞 JaderoChan Website - bilingual portfolio and project showcase." />
   <link rel="icon" href="https://github.com/JaderoChan.png" type="image/png" />
+  <link rel="stylesheet" href="./lib/katex/katex.min.css" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -45,7 +46,7 @@
       <h2 class="zh">关于我</h2>
       <h2 class="en lang-hidden">About Me</h2>
       <div class="profile-card">
-        <img class="avatar" src="https://github.com/JaderoChan.png" alt="JaderoChan avatar" onerror="this.style.display='none'" />
+        <img class="avatar" src="./cache/meta/assets/avatar.png" alt="JaderoChan avatar" onerror="this.src='https://github.com/JaderoChan.png'" />
         <div class="profile-info">
           <h3>頔珞 · JaderoChan</h3>
           <p class="zh">
@@ -83,6 +84,9 @@
     <span class="en lang-hidden">© <span id="year2"></span> JaderoChan · Powered by GitHub Pages</span>
   </footer>
 
+  <script src="./lib/marked/marked.min.js"></script>
+  <script src="./lib/katex/katex.min.js"></script>
+  <script src="./lib/katex/contrib/auto-render.min.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>

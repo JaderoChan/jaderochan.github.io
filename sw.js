@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jadero-site-v1';
+const CACHE_NAME = 'jadero-site-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -10,6 +10,11 @@ const ASSETS_TO_CACHE = [
   './base.js',
   './gallery.js',
   './knowledge.js',
+  './config.json',
+  './lib/marked/marked.min.js',
+  './lib/katex/katex.min.js',
+  './lib/katex/katex.min.css',
+  './lib/katex/contrib/auto-render.min.js',
   './assets/repos.svg',
   './assets/people.svg',
   './assets/commit.svg',

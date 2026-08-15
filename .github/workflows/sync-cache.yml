@@ -1,4 +1,4 @@
-name: Generate GitHub Stats JSON
+name: Sync Cache
 
 on:
   workflow_dispatch:
@@ -8,15 +8,16 @@ on:
     branches:
       - main
     paths:
-      - scripts/generate-github-stats.mjs
-      - .github/workflows/generate-github-stats.yml
-      - script.js
+      - config.json
+      - scripts/sync-cache.mjs
+      - scripts/setup-libs.mjs
+      - .github/workflows/sync-cache.yml
 
 permissions:
   contents: write
 
 jobs:
-  generate:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,21 +28,25 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Generate stats JSON
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download client libraries (skipped if already present)
+        run: node scripts/setup-libs.mjs
+
+      - name: Sync cache
         env:
-          GITHUB_OWNER: JaderoChan
-          GITHUB_USER: JaderoChan
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/generate-github-stats.mjs
+        run: node scripts/sync-cache.mjs
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/github-stats.json
+          git add cache/ lib/
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "chore: refresh github stats snapshot"
+          git commit -m "chore: sync cache"
           git push
