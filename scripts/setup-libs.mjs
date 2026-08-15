@@ -27,7 +27,6 @@ const KATEX_FONTS = [
   'KaTeX_Main-Regular.woff2',
   'KaTeX_Math-BoldItalic.woff2',
   'KaTeX_Math-Italic.woff2',
-  'KaTeX_Math-Regular.woff2',
   'KaTeX_SansSerif-Bold.woff2',
   'KaTeX_SansSerif-Italic.woff2',
   'KaTeX_SansSerif-Regular.woff2',
