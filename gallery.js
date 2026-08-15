@@ -53,6 +53,14 @@ function isImageFile(fileName) {
   return IMAGE_EXTENSIONS.test(fileName);
 }
 
+function isResponsiveAvifVariant(fileName) {
+  if (!fileName || !/\.avif$/i.test(fileName)) return false;
+  const stem = imageStem(fileName);
+  const match = stem.match(/-(\d+)$/);
+  if (!match) return false;
+  return AVIF_WIDTHS.includes(Number(match[1]));
+}
+
 function readCache(key) {
   try {
     const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
@@ -98,7 +106,7 @@ async function fetchGalleryFileNames() {
     if (!Array.isArray(entries)) return [];
 
     const fileNames = entries
-      .filter((entry) => entry && entry.type === 'file' && isImageFile(entry.name))
+      .filter((entry) => entry && entry.type === 'file' && isImageFile(entry.name) && !isResponsiveAvifVariant(entry.name))
       .map((entry) => entry.name)
       .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
 
@@ -156,7 +164,7 @@ function renderGallery() {
           <source type="image/avif" srcset="${responsiveAvifSrcset(item.file)}" sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw" />
           <img
             class="gallery-card-image"
-            src="${avifUrlForWidth(item.file, 1200)}"
+            src="${imageUrl(item.file)}"
             srcset="${responsiveAvifSrcset(item.file)}"
             sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw"
             alt="${escapeHtml(altText)}"
