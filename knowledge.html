@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>知识积累 · 頔珞 JaderoChan Website</title>
+  <title>頔珞 JaderoChan Website · 知识积累</title>
   <meta name="description" content="Knowledge Notes - accumulated learning and technical summaries." />
-  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="https://github.com/JaderoChan.png" type="image/png" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -45,5 +45,12 @@
   </button>
 
   <script src="./knowledge.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

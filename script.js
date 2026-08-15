@@ -166,24 +166,19 @@ const myBaseModules = [
   }
 ];
 
-const myBaseModuleMap = Object.fromEntries(myBaseModules.map((module) => [module.key, module]));
-
 const state = {
   lang: localStorage.getItem('lang') || 'zh',
-  theme: 'dark',
   route: parseHashRoute(window.location.hash)
 };
 
 let cachedUser = null;
 let cachedRepoMap = {};
 let cachedCommits = {};
-let cachedReleases = {};
 let cachedLastYearCommits = null;
 let cachedReadmePathMap = {};
 let cachedReadmeDocMap = {};
 let cachedRenderedMarkdownMap = {};
 let cachedRepoContentMap = {};
-let cachedMyBaseStructure = null;
 
 // Pre-populate readme path cache from project configs to avoid directory-scanning API calls
 for (const project of featuredProjects) {
@@ -204,12 +199,6 @@ function parseHashRoute(hash) {
     };
   }
   return { page: 'home', detail: '' };
-}
-
-function routeToHash(route) {
-  if (route.page === 'my-base' && route.detail) return `#my-base/${encodeURIComponent(route.detail)}`;
-  if (route.page === 'my-base') return '#my-base';
-  return '#home';
 }
 
 function mergeHeaders(defaultHeaders, customHeaders) {
@@ -682,26 +671,12 @@ async function getRepoContent(repo, path = '') {
   return data;
 }
 
-async function getLatestReleaseTag(repo) {
-  const data = await apiFetchJson(`${API}/repos/${GITHUB_USER}/${repo}/releases/latest`);
-  return data?.tag_name || null;
-}
-
 function labelForModule(module) {
   return state.lang === 'zh' ? module.zh : module.en;
 }
 
 function descForModule(module) {
   return state.lang === 'zh' ? module.descZh : module.descEn;
-}
-
-function formatDate(dateString) {
-  if (!dateString) return '—';
-  try {
-    return new Date(dateString).toLocaleDateString(state.lang === 'zh' ? 'zh-CN' : 'en-US');
-  } catch {
-    return '—';
-  }
 }
 
 function describeEntryType(entry) {
@@ -1021,8 +996,8 @@ function updatePageVisibility() {
 
   if (state.route.page === 'my-base') {
     document.title = state.route.detail === 'writings'
-      ? 'Writings · Base · 頔珞 JaderoChan Website'
-      : 'Base · 頔珞 JaderoChan Website';
+      ? '頔珞 JaderoChan Website · Base · Writings'
+      : '頔珞 JaderoChan Website · Base';
   } else {
     document.title = '頔珞 JaderoChan Website';
   }
@@ -1032,7 +1007,6 @@ function renderAll() {
   updatePageVisibility();
   renderStats();
   renderProjects();
-  void renderMyBaseContent();
 }
 
 async function loadData() {

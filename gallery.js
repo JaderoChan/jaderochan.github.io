@@ -165,8 +165,6 @@ function renderGallery() {
           <img
             class="gallery-card-image"
             src="${imageUrl(item.file)}"
-            srcset="${responsiveAvifSrcset(item.file)}"
-            sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw"
             alt="${escapeHtml(altText)}"
             loading="lazy"
             decoding="async"
