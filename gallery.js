@@ -214,7 +214,7 @@ function setLang(lang) {
   state.lang = lang;
   localStorage.setItem('lang', lang);
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-  document.title = lang === 'zh' ? '頔珞 JaderoChan Website · 画廊' : 'JaderoChan Website · Gallery';
+  document.title = lang === 'zh' ? '頔珞 JaderoChan Website · 画廊' : '頔珞 JaderoChan Website · Gallery';
   document.querySelectorAll('.zh').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'zh'));
   document.querySelectorAll('.en').forEach((element) => element.classList.toggle('lang-hidden', lang !== 'en'));
 }
