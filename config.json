@@ -59,7 +59,7 @@
       "url": "https://github.com/JaderoChan/EasyLinks",
       "screenshot": "doc/screenshots/progress_dialog_en.png",
       "description": {
-        "zh": "桌面链接管理工具，支持符号链接、硬链接与 Pattern Link 批量策略，结合 GUI 与全局热键实现"复制-定位-一键链接"流程，并提供冲突处理、Review 预审与重命名模板等工程化能力。项目关注高频文件整理场景，强调批处理效率与可回溯操作体验，并兼顾复杂目录场景下的批量安全性。",
+        "zh": "桌面链接管理工具，支持符号链接、硬链接与 Pattern Link 批量策略，结合 GUI 与全局热键实现「复制-定位-一键链接」流程，并提供冲突处理、Review 预审与重命名模板等工程化能力。项目关注高频文件整理场景，强调批处理效率与可回溯操作体验，并兼顾复杂目录场景下的批量安全性。",
         "en": "A desktop link-management tool supporting symbolic links, hard links, and Pattern Link batch workflows, combining GUI and global hotkeys for copy-target-fast-link operations, with conflict handling, review-stage filtering, and naming-template customization. It targets high-frequency file organization work and emphasizes both batch efficiency and traceable operations, while preserving safety in large and complex directory structures."
       }
     },
