@@ -174,10 +174,18 @@ function saveScrollPos(filepath) {
   const content = document.getElementById('kn-content');
   if (content) kSet('scroll:' + filepath, content.scrollTop);
 }
+function _applyScrollAfterLoad(el, target) {
+  if (!target) return;
+  const imgs = [...el.querySelectorAll('img')].filter(img => !img.complete);
+  if (!imgs.length) { requestAnimationFrame(() => { el.scrollTop = target; }); return; }
+  let n = imgs.length;
+  const done = () => { if (--n === 0) el.scrollTop = target; };
+  imgs.forEach(img => { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); });
+}
 function restoreScrollPos(filepath) {
   const content = document.getElementById('kn-content');
   if (!content) return;
-  content.scrollTop = kGet('scroll:' + filepath, 0);
+  _applyScrollAfterLoad(content, kGet('scroll:' + filepath, 0));
 }
 function bindScrollSave(filepath) {
   const content = document.getElementById('kn-content');

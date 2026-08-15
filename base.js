@@ -171,6 +171,14 @@ function bindBaseScroll(contentId, tabId) {
     _baseScrollTimers[contentId] = setTimeout(() => saveBaseScroll(contentId, tabId), 200);
   };
 }
+function _applyScrollAfterLoad(el, target) {
+  if (!target) return;
+  const imgs = [...el.querySelectorAll('img')].filter(img => !img.complete);
+  if (!imgs.length) { requestAnimationFrame(() => { el.scrollTop = target; }); return; }
+  let n = imgs.length;
+  const done = () => { if (--n === 0) el.scrollTop = target; };
+  imgs.forEach(img => { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); });
+}
 
 async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseUrl) {
   const tab = tabs.find(item => item.id === tabId);
@@ -181,7 +189,7 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   const cacheKey = cachePrefix + ':' + tabId;
   if (fileCache[cacheKey]) {
     content.innerHTML = fileCache[cacheKey];
-    content.scrollTop = bGet('scroll:' + contentId + ':' + tabId, 0);
+    _applyScrollAfterLoad(content, bGet('scroll:' + contentId + ':' + tabId, 0));
     bindBaseScroll(contentId, tabId);
     return;
   }
@@ -196,7 +204,7 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   const wrapped = '<div class="md-content">' + html + '</div>';
   fileCache[cacheKey] = wrapped;
   content.innerHTML = wrapped;
-  content.scrollTop = bGet('scroll:' + contentId + ':' + tabId, 0);
+  _applyScrollAfterLoad(content, bGet('scroll:' + contentId + ':' + tabId, 0));
   bindBaseScroll(contentId, tabId);
 }
 
