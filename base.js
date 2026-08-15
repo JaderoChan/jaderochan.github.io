@@ -17,6 +17,7 @@ let currentLang = localStorage.getItem('lang') || 'zh';
 
 function applyLang() {
   document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+  document.title = currentLang === 'zh' ? '頔珞 JaderoChan Website · 基' : 'JaderoChan Website · Base';
   document.querySelectorAll('.zh').forEach(el => el.classList.toggle('lang-hidden', currentLang !== 'zh'));
   document.querySelectorAll('.en').forEach(el => el.classList.toggle('lang-hidden', currentLang !== 'en'));
 }
