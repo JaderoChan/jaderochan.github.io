@@ -31,7 +31,7 @@
     {
       "name": "BPNN",
       "url": "https://github.com/JaderoChan/BPNN",
-      "screenshot": "example/digit_recognizer/images/predict_result.png",
+      "screenshot": "example/digit_recognizer/images/predict_result.jpg",
       "description": {
         "zh": "纯 C99 实现的三层全连接 BP 神经网络学习项目，内置多种激活函数与损失函数，支持训练回调、参数持久化与推理流程；配套 MNIST 手写数字识别示例在 50 轮训练后可达约 98% 准确率。代码结构按教学与实验复现组织，便于理解反向传播细节并扩展更多网络实验，同时可直接作为轻量神经网络实验脚手架使用。",
         "en": "A pure C99 three-layer backpropagation neural network project for learning fundamentals, featuring multiple activation/loss functions, train callbacks, parameter persistence, and inference APIs, plus an MNIST digit recognizer example reaching around 98% accuracy after 50 epochs. The code organization is designed for study and reproducible experiments, making it easier to inspect and extend core backpropagation steps while also serving as a lightweight NN experiment scaffold."
