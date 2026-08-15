@@ -22,8 +22,12 @@ function imageStem(fileName) {
   return dotIndex >= 0 ? fileName.slice(0, dotIndex) : fileName;
 }
 
+function baseAvifStem(fileName) {
+  return imageStem(fileName).replace(/-\d+$/, '');
+}
+
 function avifUrlForWidth(fileName, width) {
-  const stem = imageStem(fileName);
+  const stem = baseAvifStem(fileName);
   return `./${GALLERY_DIR}/${encodeURIComponent(`${stem}-${width}.avif`)}`;
 }
 
@@ -150,7 +154,15 @@ function renderGallery() {
       <figure class="gallery-card" data-gallery-index="${index}">
         <picture>
           <source type="image/avif" srcset="${responsiveAvifSrcset(item.file)}" sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw" />
-          <img class="gallery-card-image" src="${imageUrl(item.file)}" alt="${escapeHtml(altText)}" loading="lazy" decoding="async" />
+          <img
+            class="gallery-card-image"
+            src="${avifUrlForWidth(item.file, 1200)}"
+            srcset="${responsiveAvifSrcset(item.file)}"
+            sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw"
+            alt="${escapeHtml(altText)}"
+            loading="lazy"
+            decoding="async"
+          />
         </picture>
         ${captionHtml}
       </figure>
