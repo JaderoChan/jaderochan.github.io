@@ -157,6 +157,21 @@ async function activateSection(section) {
 }
 
 // --- Markdown tab loader helper ---
+let _baseScrollTimers = {};
+function saveBaseScroll(contentId, tabId) {
+  if (!tabId) return;
+  const el = document.getElementById(contentId);
+  if (el) bSet('scroll:' + contentId + ':' + tabId, el.scrollTop);
+}
+function bindBaseScroll(contentId, tabId) {
+  const el = document.getElementById(contentId);
+  if (!el) return;
+  el.onscroll = () => {
+    clearTimeout(_baseScrollTimers[contentId]);
+    _baseScrollTimers[contentId] = setTimeout(() => saveBaseScroll(contentId, tabId), 200);
+  };
+}
+
 async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseUrl) {
   const tab = tabs.find(item => item.id === tabId);
   if (!tab) return;
@@ -164,7 +179,12 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   if (!content) return;
 
   const cacheKey = cachePrefix + ':' + tabId;
-  if (fileCache[cacheKey]) { content.innerHTML = fileCache[cacheKey]; return; }
+  if (fileCache[cacheKey]) {
+    content.innerHTML = fileCache[cacheKey];
+    content.scrollTop = bGet('scroll:' + contentId + ':' + tabId, 0);
+    bindBaseScroll(contentId, tabId);
+    return;
+  }
 
   content.innerHTML = '<p class="base-status-text">' + t('加载中...', 'Loading...') + '</p>';
   const text = await fetchText(baseUrl + tab.filename);
@@ -176,6 +196,8 @@ async function loadMarkdownTabContent(tabId, tabs, contentId, cachePrefix, baseU
   const wrapped = '<div class="md-content">' + html + '</div>';
   fileCache[cacheKey] = wrapped;
   content.innerHTML = wrapped;
+  content.scrollTop = bGet('scroll:' + contentId + ':' + tabId, 0);
+  bindBaseScroll(contentId, tabId);
 }
 
 // --- References ---
@@ -188,6 +210,7 @@ async function ensureReferences() {
   referencesData = data;
 
   renderTabBar('references-tabbar', data.tabs, async (id) => {
+    saveBaseScroll('references-content', bGet('references.tab', null));
     bSet('references.tab', id);
     setActiveTab('references-tabbar', id);
     await loadMarkdownTabContent(id, referencesData.tabs, 'references-content', 'ref', './base/references/');
@@ -211,6 +234,7 @@ async function ensureOthers() {
   othersData = data;
 
   renderTabBar('others-tabbar', data.tabs, async (id) => {
+    saveBaseScroll('others-content', bGet('others.tab', null));
     bSet('others.tab', id);
     setActiveTab('others-tabbar', id);
     await loadMarkdownTabContent(id, othersData.tabs, 'others-content', 'oth', './base/others/');

@@ -101,10 +101,15 @@ function renderProjects() {
     const repo  = extractRepo(project.url);
     const info  = projectInfos[repo] || {};
     const desc  = isZh ? project.description?.zh : project.description?.en;
-    const lang  = info.language || '';
     const ver   = info.has_release && info.latest_release ? info.latest_release : null;
 
-    const langBadge = lang ? `<span class="badge">${escapeHtml(lang)}</span>` : '';
+    const langBadge = info.language_breakdown
+      ? Object.entries(info.language_breakdown)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([name, pct]) => `<span class="badge">${escapeHtml(name)} ${pct}%</span>`)
+          .join('')
+      : (info.language ? `<span class="badge">${escapeHtml(info.language)}</span>` : '');
     const verBadge  = ver  ? `<span class="badge">${escapeHtml(ver)}</span>`  : '';
     const screenshotHtml = info.screenshot
       ? `<div class="project-screenshot-wrap">

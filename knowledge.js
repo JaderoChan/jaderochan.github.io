@@ -168,7 +168,34 @@ function syncSidebarHighlight() {
 // --- Content display ---
 const renderedPageCache = {};
 
+// Scroll position helpers
+let _scrollSaveTimer = null;
+function saveScrollPos(filepath) {
+  const content = document.getElementById('kn-content');
+  if (content) kSet('scroll:' + filepath, content.scrollTop);
+}
+function restoreScrollPos(filepath) {
+  const content = document.getElementById('kn-content');
+  if (!content) return;
+  content.scrollTop = kGet('scroll:' + filepath, 0);
+}
+function bindScrollSave(filepath) {
+  const content = document.getElementById('kn-content');
+  if (!content) return;
+  content.onscroll = () => {
+    clearTimeout(_scrollSaveTimer);
+    _scrollSaveTimer = setTimeout(() => saveScrollPos(filepath), 200);
+  };
+}
+
+let _currentFilepath = null;
+
 async function displayFile(filepath, pushToStack) {
+  // Save current scroll position before switching
+  if (_currentFilepath && _currentFilepath !== filepath) {
+    saveScrollPos(_currentFilepath);
+  }
+
   if (pushToStack) {
     navStack.push(filepath);
     kSet('navStack', navStack);
@@ -176,13 +203,15 @@ async function displayFile(filepath, pushToStack) {
     syncSidebarHighlight();
   }
 
+  _currentFilepath = filepath;
   const content = document.getElementById('kn-content');
   if (!content) return;
 
   if (renderedPageCache[filepath]) {
     content.innerHTML = renderedPageCache[filepath];
     bindInternalLinks(content, filepath);
-    content.scrollTop = 0;
+    restoreScrollPos(filepath);
+    bindScrollSave(filepath);
     return;
   }
 
@@ -199,7 +228,8 @@ async function displayFile(filepath, pushToStack) {
   renderedPageCache[filepath] = wrapped;
   content.innerHTML = wrapped;
   bindInternalLinks(content, filepath);
-  content.scrollTop = 0;
+  restoreScrollPos(filepath);
+  bindScrollSave(filepath);
 }
 
 function bindInternalLinks(container, currentFilepath) {
