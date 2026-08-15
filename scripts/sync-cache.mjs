@@ -158,7 +158,7 @@ async function syncMeta(config) {
 // Per-project sync
 // ---------------------------------------------------------------------------
 
-async function syncProject(user, project) {
+async function syncProject(user, project, skipUnchanged) {
   const repo = extractRepo(project.url);
   const projectDir = join(ROOT, 'cache', 'featured_projects', repo);
   const assetsDir = join(projectDir, 'assets');
@@ -173,9 +173,8 @@ async function syncProject(user, project) {
   const repoData = await ghJson(`/repos/${user}/${repo}`);
   const branch = repoData.default_branch || 'main';
 
-  // Skip if latest commit unchanged
   const latestHash = await getLatestCommitHash(user, repo, branch);
-  if (latestHash && existingInfo?.commit_hash === latestHash) {
+  if (skipUnchanged && latestHash && existingInfo?.commit_hash === latestHash) {
     console.log(`  skip ${repo} (unchanged)`);
     return;
   }
@@ -284,9 +283,10 @@ async function main() {
   console.log('Syncing meta...');
   await syncMeta(config);
 
+  const skipUnchanged = config.cache?.skip_unchanged !== false;
   console.log('Syncing projects...');
   for (const project of projects) {
-    await syncProject(user, project);
+    await syncProject(user, project, skipUnchanged);
   }
 
   await cleanupRemovedProjects(config);
