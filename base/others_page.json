@@ -1,0 +1,19 @@
+{
+  "tabs": [
+    {
+      "id": "proxy-domains",
+      "filename": "\u4ee3\u7406\u57df\u540d\u5217\u8868.md",
+      "name": { "zh": "\u4ee3\u7406\u57df\u540d\u5217\u8868", "en": "Proxy Domain List" }
+    },
+    {
+      "id": "low-quality-sites",
+      "filename": "\u56fd\u5185\u5916\u4f4e\u8d28\u7f51\u7ad9\u57df\u540d\u5217\u8868.md",
+      "name": { "zh": "\u56fd\u5185\u5916\u4f4e\u8d28\u7f51\u7ad9\u57df\u540d\u5217\u8868", "en": "Low-Quality Site Domain List" }
+    },
+    {
+      "id": "ebbinghaus",
+      "filename": "\u7b26\u5408\u827e\u5bbe\u6d69\u65af\u9057\u5fd8\u66f2\u7ebf\u7684\u590d\u4e60\u65b9\u6cd5.md",
+      "name": { "zh": "\u827e\u5bbe\u6d69\u65af\u590d\u4e60\u6cd5", "en": "Ebbinghaus Spaced Repetition" }
+    }
+  ]
+}

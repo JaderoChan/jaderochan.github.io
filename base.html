@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>基 · 頔珞 JaderoChan Website</title>
+  <meta name="description" content="Base - references, algorithms, and more." />
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="nav-primary">
+        <a class="brand" href="./index.html">頔珞 JaderoChan Website</a>
+        <nav class="nav-links" aria-label="Primary">
+          <a class="nav-link" href="./index.html"><span class="zh">主页</span><span class="en lang-hidden">Home</span></a>
+          <a class="nav-link nav-link-active" href="./base.html"><span class="zh">基</span><span class="en lang-hidden">Base</span></a>
+          <a class="nav-link" href="./knowledge.html"><span class="zh">知识积累</span><span class="en lang-hidden">Knowledge Notes</span></a>
+          <a class="nav-link" href="./gallery.html"><span class="zh">画廊</span><span class="en lang-hidden">Gallery</span></a>
+        </nav>
+      </div>
+      <div class="controls">
+        <button id="langBtn">中 / EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="base-main-wrapper">
+    <div class="base-layout">
+      <aside class="base-sidebar" aria-label="Section navigation">
+        <nav class="base-sidenav">
+          <button class="base-sidenav-btn" data-section="references">
+            <span class="zh">引用</span><span class="en lang-hidden">References</span>
+          </button>
+          <button class="base-sidenav-btn" data-section="algorithms">
+            <span class="zh">算法</span><span class="en lang-hidden">Algorithms</span>
+          </button>
+          <button class="base-sidenav-btn" data-section="others">
+            <span class="zh">其他</span><span class="en lang-hidden">Others</span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="base-main">
+        <!-- References section -->
+        <div id="section-references" class="base-section" role="tabpanel">
+          <div id="references-tabbar" class="base-tabbar" role="tablist" aria-label="References tabs"></div>
+          <div id="references-content" class="base-section-content">
+            <p class="base-status-text"><span class="zh">加载中...</span><span class="en lang-hidden">Loading...</span></p>
+          </div>
+        </div>
+
+        <!-- Algorithms section -->
+        <div id="section-algorithms" class="base-section" role="tabpanel">
+          <div id="algorithms-tabbar" class="base-tabbar" role="tablist" aria-label="Algorithm project tabs"></div>
+          <div class="algo-split">
+            <div id="algo-filetree" class="algo-filetree" aria-label="File tree"></div>
+            <div id="algo-viewer" class="algo-viewer">
+              <div class="algo-viewer-center">
+                <span class="zh">从左侧选择文件查看</span><span class="en lang-hidden">Select a file from the left</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Others section -->
+        <div id="section-others" class="base-section" role="tabpanel">
+          <div id="others-tabbar" class="base-tabbar" role="tablist" aria-label="Others tabs"></div>
+          <div id="others-content" class="base-section-content">
+            <p class="base-status-text"><span class="zh">加载中...</span><span class="en lang-hidden">Loading...</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="./base.js"></script>
+</body>
+</html>

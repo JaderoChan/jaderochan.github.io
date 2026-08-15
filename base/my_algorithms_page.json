@@ -1,0 +1,49 @@
+{
+  "projects": [
+    {
+      "id": "k-means",
+      "name": "k-means",
+      "tree": [
+        { "type": "file", "name": "CMakeLists.txt", "path": "k-means/CMakeLists.txt" },
+        { "type": "file", "name": "kmeans.cpp", "path": "k-means/kmeans.cpp" },
+        { "type": "file", "name": "kmeans.hpp", "path": "k-means/kmeans.hpp" },
+        {
+          "type": "dir", "name": "example", "path": "k-means/example",
+          "children": [
+            { "type": "file", "name": "CMakeLists.txt", "path": "k-means/example/CMakeLists.txt" },
+            {
+              "type": "dir", "name": "dump_image_theme_color", "path": "k-means/example/dump_image_theme_color",
+              "children": [
+                { "type": "file", "name": "CMakeLists.txt", "path": "k-means/example/dump_image_theme_color/CMakeLists.txt" },
+                { "type": "file", "name": "main.cpp", "path": "k-means/example/dump_image_theme_color/main.cpp" },
+                { "type": "file", "name": "stb_image.c", "path": "k-means/example/dump_image_theme_color/stb_image.c" },
+                { "type": "file", "name": "stb_image.h", "path": "k-means/example/dump_image_theme_color/stb_image.h" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sorts",
+      "name": "sorts",
+      "tree": [
+        { "type": "file", "name": "CMakeLists.txt", "path": "sorts/CMakeLists.txt" },
+        { "type": "file", "name": "sorts.h", "path": "sorts/sorts.h" },
+        {
+          "type": "dir", "name": "example", "path": "sorts/example",
+          "children": [
+            { "type": "file", "name": "CMakeLists.txt", "path": "sorts/example/CMakeLists.txt" },
+            {
+              "type": "dir", "name": "benchmark", "path": "sorts/example/benchmark",
+              "children": [
+                { "type": "file", "name": "CMakeLists.txt", "path": "sorts/example/benchmark/CMakeLists.txt" },
+                { "type": "file", "name": "main.cpp", "path": "sorts/example/benchmark/main.cpp" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

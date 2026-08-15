@@ -1,0 +1,49 @@
+{
+  "tabs": [
+    {
+      "id": "ascii",
+      "filename": "ASCII \u901f\u67e5\u8868.md",
+      "name": { "zh": "ASCII \u901f\u67e5\u8868", "en": "ASCII Cheat Sheet" }
+    },
+    {
+      "id": "ffmpge",
+      "filename": "FFmpge \u6307\u4ee4\u901f\u67e5\u8868_PAIGC.md",
+      "name": { "zh": "FFmpge \u6307\u4ee4\u901f\u67e5\u8868 (PAIGC)", "en": "FFmpge Commands Cheat Sheet (PAIGC)" }
+    },
+    {
+      "id": "latex",
+      "filename": "Latex \u7b26\u53f7\u901f\u67e5\u8868.md",
+      "name": { "zh": "LaTeX \u7b26\u53f7\u901f\u67e5\u8868", "en": "LaTeX Symbols Cheat Sheet" }
+    },
+    {
+      "id": "i18n-lang",
+      "filename": "\u5168\u7403\u56fd\u9645\u5316\u8bed\u8a00\u4ee3\u7801\u901f\u67e5\u8868.md",
+      "name": { "zh": "\u5168\u7403\u56fd\u9645\u5316\u8bed\u8a00\u4ee3\u7801\u901f\u67e5\u8868", "en": "Global i18n Language Codes" }
+    },
+    {
+      "id": "file-header",
+      "filename": "\u5e38\u89c1\u6587\u4ef6\u5934\u901f\u67e5\u8868_PAIGC.md",
+      "name": { "zh": "\u5e38\u89c1\u6587\u4ef6\u5934\u901f\u67e5\u8868 (PAIGC)", "en": "File Header Cheat Sheet (PAIGC)" }
+    },
+    {
+      "id": "oss-licenses",
+      "filename": "\u5f00\u6e90\u534f\u8bae\u5bf9\u6bd4\u8868.md",
+      "name": { "zh": "\u5f00\u6e90\u534f\u8bae\u5bf9\u6bd4\u8868", "en": "Open Source Licenses Comparison" }
+    },
+    {
+      "id": "sorting",
+      "filename": "\u6392\u5e8f\u7b97\u6cd5\u5bf9\u6bd4\u8868.md",
+      "name": { "zh": "\u6392\u5e8f\u7b97\u6cd5\u5bf9\u6bd4\u8868", "en": "Sorting Algorithms Comparison" }
+    },
+    {
+      "id": "regex",
+      "filename": "\u6b63\u5219\u8868\u8fbe\u5f0f\u8bed\u6cd5\u901f\u67e5\u8868_PAIGC.md",
+      "name": { "zh": "\u6b63\u5219\u8868\u8fbe\u5f0f\u8bed\u6cd5\u901f\u67e5\u8868 (PAIGC)", "en": "Regex Syntax Cheat Sheet (PAIGC)" }
+    },
+    {
+      "id": "terminal-escape",
+      "filename": "\u7ec8\u7aef\u8f6c\u4e49\u5e8f\u5217\u901f\u67e5\u8868_PAIGC.md",
+      "name": { "zh": "\u7ec8\u7aef\u8f6c\u4e49\u5e8f\u5217\u901f\u67e5\u8868 (PAIGC)", "en": "Terminal Escape Sequences (PAIGC)" }
+    }
+  ]
+}
