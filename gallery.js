@@ -1,9 +1,5 @@
-const GITHUB_OWNER = 'JaderoChan';
-const GITHUB_REPO = 'jaderochan.github.io';
 const GALLERY_DIR = 'pages_data/gallery';
-const DESCRIPTIONS_FILE = `${GALLERY_DIR}/descriptions.json`;
-const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|avif)$/i;
-const AVIF_WIDTHS = [480, 800, 1200, 1800];
+const CONFIG_FILE = `${GALLERY_DIR}/config.json`;
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const CACHE_PREFIX = 'jadero:gh:gallery:';
 
@@ -17,24 +13,6 @@ function imageUrl(fileName) {
   return `./${GALLERY_DIR}/${encodeURIComponent(fileName)}`;
 }
 
-function imageStem(fileName) {
-  const dotIndex = fileName.lastIndexOf('.');
-  return dotIndex >= 0 ? fileName.slice(0, dotIndex) : fileName;
-}
-
-function baseAvifStem(fileName) {
-  return imageStem(fileName).replace(/-\d+$/, '');
-}
-
-function avifUrlForWidth(fileName, width) {
-  const stem = baseAvifStem(fileName);
-  return `./${GALLERY_DIR}/${encodeURIComponent(`${stem}-${width}.avif`)}`;
-}
-
-function responsiveAvifSrcset(fileName) {
-  return AVIF_WIDTHS.map((width) => `${avifUrlForWidth(fileName, width)} ${width}w`).join(', ');
-}
-
 function escapeHtml(text) {
   return String(text || '')
     .replace(/&/g, '&amp;')
@@ -45,10 +23,7 @@ function escapeHtml(text) {
 }
 
 function normalizeDescription(value) {
-  if (!value || typeof value === 'string') {
-    const s = typeof value === 'string' ? value.trim() : '';
-    return { zh: s, en: s };
-  }
+  if (!value || typeof value !== 'object') return { zh: '', en: '' };
   return {
     zh: typeof value.zh === 'string' ? value.zh.trim() : '',
     en: typeof value.en === 'string' ? value.en.trim() : ''
@@ -59,17 +34,6 @@ function resolveDescription(desc, lang) {
   return (lang === 'zh' ? desc.zh : desc.en) || desc.zh || desc.en || '';
 }
 
-function isImageFile(fileName) {
-  return IMAGE_EXTENSIONS.test(fileName);
-}
-
-function isResponsiveAvifVariant(fileName) {
-  if (!fileName || !/\.avif$/i.test(fileName)) return false;
-  const stem = imageStem(fileName);
-  const match = stem.match(/-(\d+)$/);
-  if (!match) return false;
-  return AVIF_WIDTHS.includes(Number(match[1]));
-}
 
 function readCache(key) {
   try {
@@ -98,55 +62,21 @@ function writeCache(key, value, ttlMs = CACHE_TTL_MS) {
   }
 }
 
-async function fetchGalleryFileNames() {
-  const cacheKey = 'gallery-file-names';
+async function fetchConfig() {
+  const cacheKey = 'gallery-config';
   const cached = readCache(cacheKey);
-  if (Array.isArray(cached)) return cached;
+  if (cached && typeof cached === 'object') return cached;
 
-  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GALLERY_DIR)}?ref=main`;
   try {
-    const response = await fetch(apiUrl, { cache: 'no-store' });
-    if (!response.ok) {
-      const stale = readCache(`${cacheKey}:stale`);
-      if (Array.isArray(stale)) return stale;
-      throw new Error(`Failed to load gallery directory: ${response.status}`);
-    }
-
-    const entries = await response.json();
-    if (!Array.isArray(entries)) return [];
-
-    const fileNames = entries
-      .filter((entry) => entry && entry.type === 'file' && isImageFile(entry.name) && !isResponsiveAvifVariant(entry.name))
-      .map((entry) => entry.name)
-      .sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }));
-
-    writeCache(cacheKey, fileNames, CACHE_TTL_MS);
-    writeCache(`${cacheKey}:stale`, fileNames, 7 * 24 * 60 * 60 * 1000);
-    return fileNames;
-  } catch {
-    const stale = readCache(`${cacheKey}:stale`);
-    if (Array.isArray(stale)) return stale;
-    throw new Error('Failed to load gallery directory.');
-  }
-}
-
-async function fetchDescriptions() {
-  try {
-    const response = await fetch(`./${DESCRIPTIONS_FILE}`, { cache: 'no-store' });
+    const response = await fetch(`./${CONFIG_FILE}`, { cache: 'no-store' });
     if (!response.ok) return {};
     const data = await response.json();
     if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+    writeCache(cacheKey, data, CACHE_TTL_MS);
     return data;
   } catch {
     return {};
   }
-}
-
-function buildGalleryItems(fileNames, descriptionsMap) {
-  return fileNames.map((fileName) => ({
-    file: fileName,
-    description: normalizeDescription(descriptionsMap[fileName])
-  }));
 }
 
 function renderGallery() {
@@ -170,16 +100,14 @@ function renderGallery() {
 
     return `
       <figure class="gallery-card" data-gallery-index="${index}">
-        <picture>
-          <source type="image/avif" srcset="${responsiveAvifSrcset(item.file)}" sizes="(max-width: 680px) 100vw, (max-width: 900px) 50vw, 33vw" />
-          <img
-            class="gallery-card-image"
-            src="${imageUrl(item.file)}"
-            alt="${escapeHtml(altText)}"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
+        <img
+          class="gallery-card-image"
+          src="${imageUrl(item.file)}"
+          alt="${escapeHtml(altText)}"
+          loading="lazy"
+          decoding="async"
+          onerror="this.closest('figure').style.display='none'"
+        />
         ${captionHtml}
       </figure>
     `;
@@ -203,7 +131,7 @@ function openLightbox(index) {
   const captionNode = document.getElementById('lightboxCaption');
   if (!lightbox || !image || !captionNode) return;
 
-  image.src = avifUrlForWidth(item.file, 1800);
+  image.src = imageUrl(item.file);
   image.alt = caption || item.file;
   captionNode.textContent = caption;
   captionNode.style.display = caption ? '' : 'none';
@@ -235,11 +163,11 @@ async function initializeGallery() {
   state.initialized = true;
 
   try {
-    const [fileNames, descriptionsMap] = await Promise.all([
-      fetchGalleryFileNames(),
-      fetchDescriptions()
-    ]);
-    state.galleryItems = buildGalleryItems(fileNames, descriptionsMap);
+    const config = await fetchConfig();
+    state.galleryItems = Object.entries(config).map(([file, entry]) => ({
+      file,
+      description: normalizeDescription(entry && entry.descriptions)
+    }));
   } catch {
     state.galleryItems = [];
   }

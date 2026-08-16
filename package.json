@@ -4,10 +4,6 @@
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-cache.mjs",
-    "setup-libs": "node scripts/setup-libs.mjs",
-    "gen-avif": "node scripts/gen-avif.mjs"
-  },
-  "dependencies": {
-    "sharp": "^0.33.0"
+    "setup-libs": "node scripts/setup-libs.mjs"
   }
 }
