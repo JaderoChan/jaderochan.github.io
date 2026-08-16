@@ -1034,7 +1034,7 @@ footer { padding: 28px 0 42px; color: var(--text-soft); font-size: 14px; }
   .base-sidenav { flex-direction: row; flex-wrap: wrap; }
   .base-section { overflow: visible; min-height: 0; }
   .base-section-content { overflow-y: visible; max-height: none; }
-  .kn-content { padding: 16px 20px; }
+  .kn-content { padding: 16px 20px; overflow-y: visible; }
   .algo-split { flex-direction: column; }
   .algo-filetree { width: 100%; height: 220px; border-right: none; border-bottom: 1px solid var(--border); }
   .algo-viewer { min-height: 400px; }
