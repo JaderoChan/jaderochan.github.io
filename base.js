@@ -225,7 +225,7 @@ let referencesData = null;
 
 async function ensureReferences() {
   if (referencesData) return;
-  const data = await fetchJson('./base/references_page.json');
+  const data = await fetchJson('./pages_data/base/references_page.json');
   if (!data || !Array.isArray(data.tabs)) return;
   referencesData = data;
 
@@ -233,14 +233,14 @@ async function ensureReferences() {
     saveBaseScroll('references-content', bGet('references.tab', null));
     bSet('references.tab', id);
     setActiveTab('references-tabbar', id);
-    await loadMarkdownTabContent(id, referencesData.tabs, 'references-content', 'ref', './base/references/');
+    await loadMarkdownTabContent(id, referencesData.tabs, 'references-content', 'ref', './pages_data/base/references/');
   }, true);
 
   const saved = bGet('references.tab', data.tabs[0] && data.tabs[0].id);
   const activeId = data.tabs.find(tab => tab.id === saved) ? saved : (data.tabs[0] && data.tabs[0].id);
   if (activeId) {
     setActiveTab('references-tabbar', activeId);
-    await loadMarkdownTabContent(activeId, referencesData.tabs, 'references-content', 'ref', './base/references/');
+    await loadMarkdownTabContent(activeId, referencesData.tabs, 'references-content', 'ref', './pages_data/base/references/');
   }
 }
 
@@ -249,7 +249,7 @@ let othersData = null;
 
 async function ensureOthers() {
   if (othersData) return;
-  const data = await fetchJson('./base/others_page.json');
+  const data = await fetchJson('./pages_data/base/others_page.json');
   if (!data || !Array.isArray(data.tabs)) return;
   othersData = data;
 
@@ -257,14 +257,14 @@ async function ensureOthers() {
     saveBaseScroll('others-content', bGet('others.tab', null));
     bSet('others.tab', id);
     setActiveTab('others-tabbar', id);
-    await loadMarkdownTabContent(id, othersData.tabs, 'others-content', 'oth', './base/others/');
+    await loadMarkdownTabContent(id, othersData.tabs, 'others-content', 'oth', './pages_data/base/others/');
   }, true);
 
   const saved = bGet('others.tab', data.tabs[0] && data.tabs[0].id);
   const activeId = data.tabs.find(tab => tab.id === saved) ? saved : (data.tabs[0] && data.tabs[0].id);
   if (activeId) {
     setActiveTab('others-tabbar', activeId);
-    await loadMarkdownTabContent(activeId, othersData.tabs, 'others-content', 'oth', './base/others/');
+    await loadMarkdownTabContent(activeId, othersData.tabs, 'others-content', 'oth', './pages_data/base/others/');
   }
 }
 
@@ -289,7 +289,7 @@ let algoData = null;
 
 async function ensureAlgorithms() {
   if (algoData) return;
-  const data = await fetchJson('./base/my_algorithms_page.json');
+  const data = await fetchJson('./pages_data/base/my_algorithms_page.json');
   if (!data || !Array.isArray(data.projects)) return;
   algoData = data;
 
@@ -408,7 +408,7 @@ async function loadCodeFile(filePath, projectId) {
 
   viewer.innerHTML = '<div class="algo-viewer-center">' + t('加载中...', 'Loading...') + '</div>';
 
-  const text = await fetchText('./base/my_algorithms/' + filePath);
+  const text = await fetchText('./pages_data/base/my_algorithms/' + filePath);
   if (text === null) {
     viewer.innerHTML = '<div class="algo-viewer-center">' + t('加载失败', 'Load failed') + '</div>';
     return;

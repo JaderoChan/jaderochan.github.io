@@ -1,6 +1,6 @@
 const GITHUB_OWNER = 'JaderoChan';
 const GITHUB_REPO = 'jaderochan.github.io';
-const GALLERY_DIR = 'gallery';
+const GALLERY_DIR = 'pages_data/gallery';
 const DESCRIPTIONS_FILE = `${GALLERY_DIR}/descriptions.json`;
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|avif)$/i;
 const AVIF_WIDTHS = [480, 800, 1200, 1800];

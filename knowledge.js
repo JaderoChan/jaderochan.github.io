@@ -232,7 +232,7 @@ async function displayFile(filepath, pushToStack) {
 
   content.innerHTML = '<div class="kn-placeholder">' + t('加载中...', 'Loading...') + '</div>';
 
-  const text = await fetchText('./knowledge_notes/' + filepath);
+  const text = await fetchText('./pages_data/knowledge_notes/' + filepath);
   if (_currentFilepath !== filepath) return;
   if (text === null) {
     content.innerHTML = '<div class="kn-placeholder">' + t('加载失败', 'Load failed') + '</div>';
@@ -269,7 +269,7 @@ function bindInternalLinks(container, currentFilepath) {
         const resolved = resolveKnPath(currentFilepath, pathPart);
         // Try to fetch to verify existence before navigating
         try {
-          const check = await fetch('./knowledge_notes/' + resolved);
+          const check = await fetch('./pages_data/knowledge_notes/' + resolved);
           if (!check.ok) return; // do nothing if not found
         } catch { return; }
         displayFile(resolved, true);
@@ -299,7 +299,7 @@ async function init() {
 
   const data = await (async () => {
     try {
-      const r = await fetch('./knowledge_notes/pages.json');
+      const r = await fetch('./pages_data/knowledge_notes/pages.json');
       return r.ok ? r.json() : null;
     } catch { return null; }
   })();
