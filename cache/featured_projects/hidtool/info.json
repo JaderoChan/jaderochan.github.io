@@ -7,15 +7,15 @@
     "C++": 95.5,
     "CMake": 4.5
   },
-  "commits": 232,
+  "commits": 233,
   "has_release": true,
   "latest_release": "v2.3.2",
   "default_branch": "main",
-  "commit_hash": "eaeb96b6dc0069731feaf0e0539add78c7ee4f92",
+  "commit_hash": "625c462ac9d20e100c14ba709464c627ff19bc82",
   "readme": {
     "zh": "readme_zh.md",
     "en": "readme_en.md"
   },
   "screenshot": null,
-  "updated_at": "2026-08-15T17:28:37.227Z"
+  "updated_at": "2026-08-18T13:06:08.201Z"
 }
