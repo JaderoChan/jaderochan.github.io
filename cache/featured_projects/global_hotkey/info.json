@@ -9,15 +9,15 @@
     "Shell": 1.6,
     "Batchfile": 1
   },
-  "commits": 181,
+  "commits": 183,
   "has_release": true,
   "latest_release": "v2.1.6",
   "default_branch": "main",
-  "commit_hash": "03bae54c024d07f2e3d98101ac8c2bcbaa7140c4",
+  "commit_hash": "081c5c6115acf0aa6c5710de48ba60a911c29a22",
   "readme": {
     "zh": "readme_zh.md",
     "en": "readme_en.md"
   },
   "screenshot": null,
-  "updated_at": "2026-08-18T13:06:09.315Z"
+  "updated_at": "2026-08-19T18:51:39.947Z"
 }

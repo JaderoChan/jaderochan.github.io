@@ -8,15 +8,15 @@
     "C": 45.3,
     "CMake": 3
   },
-  "commits": 30,
+  "commits": 31,
   "has_release": true,
   "latest_release": "v1.3.0",
   "default_branch": "main",
-  "commit_hash": "d53f37ec691f986db31b937b314f5ee90f567ce5",
+  "commit_hash": "cb53c5a0803bca404bb297e217929fd7f1661845",
   "readme": {
     "zh": "readme_zh.md",
     "en": "readme_en.md"
   },
   "screenshot": "assets/screenshot.jpg",
-  "updated_at": "2026-08-15T17:28:43.424Z"
+  "updated_at": "2026-08-19T18:51:42.556Z"
 }
