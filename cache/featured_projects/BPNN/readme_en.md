@@ -1,6 +1,6 @@
 # BP Neural Network
 
-[[中文简体](README.md) | **English**]
+[[中文简体](./README.md) | **English**]
 
 [![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/JaderoChan/BPNN)
 
@@ -13,7 +13,7 @@ A three-layer fully-connected BP neural network library implemented in pure C99,
 > - **Activation functions**: Sigmoid, Tanh, ReLU, Leaky ReLU, Softmax, Linear
 > - **Loss functions**：CCE (Categorical Cross Entropy), BCE (Binary cross entropy), MSE (Mean square error)
 
-For formula derivations, see [BP Neural Network Formula Derivation](BP%20Neural%20Network%20Formula%20Derivation.md).
+For formula derivations, see [BP Neural Network Formula Derivation](./docs/BP%20Neural%20Network%20Formula%20Derivation.md).
 
 ## Features
 
@@ -36,7 +36,7 @@ cmake --build build -j --config=Release
 
 ### Build the Example
 
-To build the example program, first extract the dataset archives under `example/digit_recognizer/data_set/`, then enable the option:
+To build the example program, first extract the dataset archives under `./example/digit_recognizer/data_set/`, then enable the option:
 
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DBPNN_BUILD_EXAMPLE=ON
@@ -77,8 +77,8 @@ bool bpnn_predict(const bpnn_params_t* params, const double* ins, double* outs);
 
 ### BPNN Digit Recognizer
 
-An MNIST handwritten digit recognition program built on this library (Use the Sigmoid function as the hidden layer activation function, Softmax as the output layer activation function, and Categorical Cross Entropy as the loss function.), achieving **98%** accuracy after 50 training epochs. See [BPNN Digit Recognizer](example/digit_recognizer/README_EN.md).
+An MNIST handwritten digit recognition program built on this library (Use the Sigmoid function as the hidden layer activation function, Softmax as the output layer activation function, and Categorical Cross Entropy as the loss function.), achieving **98%** accuracy after 50 training epochs. See [BPNN Digit Recognizer](./example/digit_recognizer/README_EN.md).
 
 ### BPNN Curve Fitting
 
-A curve fitting GUI program built on this library (1-N-1 network, configurable hidden layer activation function, Linear output activation, MSE loss function), featuring real-time training visualization and interactive scatter point management. See [BPNN Curve Fitting](example/curve_fitting/README_EN.md).
+A curve fitting GUI program built on this library (1-N-1 network, configurable hidden layer activation function, Linear output activation, MSE loss function), featuring real-time training visualization and interactive scatter point management. See [BPNN Curve Fitting](./example/curve_fitting/README_EN.md).

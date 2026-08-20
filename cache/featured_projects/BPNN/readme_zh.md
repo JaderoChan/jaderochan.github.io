@@ -1,6 +1,6 @@
 # BP 神经网络
 
-[**中文简体** | [English](README_EN.md)]
+[**中文简体** | [English](./README_EN.md)]
 
 [![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/JaderoChan/BPNN)
 
@@ -11,7 +11,7 @@
 > - **激活函数**：Sigmoid、Tanh、ReLU、Leaky ReLU、Softmax、Linear
 > - **损失函数**：CCE（多分类交叉熵）、BCE（二元交叉熵）、MSE（均方误差）
 
-公式推导详见 [BP 神经网络公式推导](BP%20神经网络公式推导.md)。
+公式推导详见 [BP 神经网络公式推导](./docs/BP%20神经网络公式推导.md)。
 
 ## 特性
 
@@ -34,7 +34,7 @@ cmake --build build -j --config=Release
 
 ### 构建示例程序
 
-若需同时构建示例程序，请先解压 `example/digit_recognizer/data_set/` 下的数据集压缩包，再开启对应选项：
+若需同时构建示例程序，请先解压 `./example/digit_recognizer/data_set/` 下的数据集压缩包，再开启对应选项：
 
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DBPNN_BUILD_EXAMPLE=ON
@@ -75,8 +75,8 @@ bool bpnn_predict(const bpnn_params_t* params, const double* ins, double* outs);
 
 ### BPNN Digit Recognizer
 
-基于本库实现的 MNIST 手写数字识别程序（使用 Sigmoid 函数作为隐藏层激活函数，Softmax 作为输出层激活函数，多分类交叉熵作为损失函数），50 轮训练后准确率可达 **98%**，详见 [BPNN Digit Recognizer](example/digit_recognizer/README.md)。
+基于本库实现的 MNIST 手写数字识别程序（使用 Sigmoid 函数作为隐藏层激活函数，Softmax 作为输出层激活函数，多分类交叉熵作为损失函数），50 轮训练后准确率可达 **98%**，详见 [BPNN Digit Recognizer](./example/digit_recognizer/README.md)。
 
 ### BPNN Curve Fitting
 
-基于本库实现的曲线拟合 GUI 程序（网络结构为 1-N-1，隐藏层激活函数可配置，输出层使用 Linear，损失函数为 MSE），支持实时训练可视化与散点交互管理，详见 [BPNN Curve Fitting](example/curve_fitting/README.md)。
+基于本库实现的曲线拟合 GUI 程序（网络结构为 1-N-1，隐藏层激活函数可配置，输出层使用 Linear，损失函数为 MSE），支持实时训练可视化与散点交互管理，详见 [BPNN Curve Fitting](./example/curve_fitting/README.md)。
