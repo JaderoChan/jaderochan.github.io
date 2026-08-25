@@ -1,3 +1,21 @@
+/**
+ * @file sorts.h
+ * @author 𬱖珞JaderoChan
+ * @date 2026-07
+ *
+ * 一个简单的 C 语言头文件 “模板” 库，实现了常用的几种排序算法，使用方法可以参见 example 程序。
+ *
+ * **排序算法**：
+ *
+ * - 冒泡排序
+ * - 选择排序
+ * - 插入排序
+ * - 希尔排序
+ * - 归并排序
+ * - 快速排序
+ * - 堆排序
+ */
+
 #ifndef JCALGO_SORTS_H
 #define JCALGO_SORTS_H
 

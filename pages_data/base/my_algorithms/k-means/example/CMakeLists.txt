@@ -1,1 +1,1 @@
-add_subdirectory(dump_image_theme_color)
+add_subdirectory(./dump_image_theme_color)

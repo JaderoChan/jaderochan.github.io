@@ -1,5 +1,5 @@
-#include <cstdint>
-#include <ctime>
+#include <stdint.h>
+#include <time.h>
 #include <algorithm>
 #include <iostream>
 #include <random>

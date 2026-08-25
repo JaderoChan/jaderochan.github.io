@@ -1,7 +1,15 @@
+/**
+ * @file kmeans.hpp
+ * @author 𬱖珞JaderoChan
+ * @date 2026-07
+ *
+ * K-Means 聚类算法实现，使用方法可以参见 example 程序
+ */
+
 #ifndef JCALGO_KMEANS_HPP
 #define JCALGO_KMEANS_HPP
 
-#include <cstddef>
+#include <stddef.h>
 #include <cmath>
 #include <stdexcept>
 #include <vector>

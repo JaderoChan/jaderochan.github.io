@@ -82,7 +82,7 @@ $$
 \frac{\partial \hat{y}_{k'}}{\partial z_k}=\hat{y}_{k'}(\mathbb{I}_{k'k}-\hat{y}_k)
 $$
 
-其中 $\mathbb{I}_{k'k}$ 为示性函数，当 $k'=k$ 时取 $1$，有
+其中 $\mathbb{I}_{k'k}$ 为示性函数（规范写法应该是 $\mathbb{1}$（`\mathbb{1}`），但是在多数 Markdown 渲染器上，显示并不符合预期，此处使用 $\mathbb{I}$（`\mathbb{I}`）进行代替），当 $k'=k$ 时取 $1$，有
 
 $$
 \frac{\partial \hat{y}_{k'}}{\partial z_k}=\hat{y}_k(1-\hat{y}_k)
