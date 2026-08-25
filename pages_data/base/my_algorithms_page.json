@@ -44,6 +44,28 @@
           ]
         }
       ]
+    },
+    {
+      "id": "thread_pool",
+      "name": "thread_pool",
+      "tree": [
+        { "type": "file", "name": "CMakeLists.txt", "path": "thread_pool/CMakeLists.txt" },
+        { "type": "file", "name": "thread_pool.cpp", "path": "thread_pool/thread_pool.cpp" },
+        { "type": "file", "name": "thread_pool.hpp", "path": "thread_pool/thread_pool.hpp" },
+        {
+          "type": "dir", "name": "example", "path": "thread_pool/example",
+          "children": [
+            { "type": "file", "name": "CMakeLists.txt", "path": "thread_pool/example/CMakeLists.txt" },
+            {
+              "type": "dir", "name": "base_example", "path": "thread_pool/example/base_example",
+              "children": [
+                { "type": "file", "name": "CMakeLists.txt", "path": "thread_pool/example/base_example/CMakeLists.txt" },
+                { "type": "file", "name": "main.cpp", "path": "thread_pool/example/base_example/main.cpp" }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

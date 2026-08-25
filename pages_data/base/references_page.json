@@ -2,48 +2,48 @@
   "tabs": [
     {
       "id": "ascii",
-      "filename": "ASCII \u901f\u67e5\u8868.md",
-      "name": { "zh": "ASCII \u901f\u67e5\u8868", "en": "ASCII Cheat Sheet" }
+      "filename": "ASCII 速查表.md",
+      "name": { "zh": "ASCII 速查表", "en": "ASCII Cheat Sheet" }
     },
     {
       "id": "ffmpge",
-      "filename": "FFmpge \u6307\u4ee4\u901f\u67e5\u8868_PAIGC.md",
-      "name": { "zh": "FFmpge \u6307\u4ee4\u901f\u67e5\u8868 (PAIGC)", "en": "FFmpge Commands Cheat Sheet (PAIGC)" }
+      "filename": "FFmpge 指令速查表_PAIGC.md",
+      "name": { "zh": "FFmpge 指令速查表 (PAIGC)", "en": "FFmpge Commands Cheat Sheet (PAIGC)" }
     },
     {
       "id": "latex",
-      "filename": "Latex \u7b26\u53f7\u901f\u67e5\u8868.md",
-      "name": { "zh": "LaTeX \u7b26\u53f7\u901f\u67e5\u8868", "en": "LaTeX Symbols Cheat Sheet" }
+      "filename": "Latex 符号速查表.md",
+      "name": { "zh": "LaTeX 符号速查表", "en": "LaTeX Symbols Cheat Sheet" }
     },
     {
       "id": "i18n-lang",
-      "filename": "\u5168\u7403\u56fd\u9645\u5316\u8bed\u8a00\u4ee3\u7801\u901f\u67e5\u8868.md",
-      "name": { "zh": "\u5168\u7403\u56fd\u9645\u5316\u8bed\u8a00\u4ee3\u7801\u901f\u67e5\u8868", "en": "Global i18n Language Codes" }
+      "filename": "全球国际化语言代码速查表.md",
+      "name": { "zh": "全球国际化语言代码速查表", "en": "Global i18n Language Codes" }
     },
     {
       "id": "file-header",
-      "filename": "\u5e38\u89c1\u6587\u4ef6\u5934\u901f\u67e5\u8868_PAIGC.md",
-      "name": { "zh": "\u5e38\u89c1\u6587\u4ef6\u5934\u901f\u67e5\u8868 (PAIGC)", "en": "File Header Cheat Sheet (PAIGC)" }
+      "filename": "常见文件头速查表_PAIGC.md",
+      "name": { "zh": "常见文件头速查表 (PAIGC)", "en": "File Header Cheat Sheet (PAIGC)" }
     },
     {
       "id": "oss-licenses",
-      "filename": "\u5f00\u6e90\u534f\u8bae\u5bf9\u6bd4\u8868.md",
-      "name": { "zh": "\u5f00\u6e90\u534f\u8bae\u5bf9\u6bd4\u8868", "en": "Open Source Licenses Comparison" }
+      "filename": "开源协议对比表.md",
+      "name": { "zh": "开源协议对比表", "en": "Open Source Licenses Comparison" }
     },
     {
       "id": "sorting",
-      "filename": "\u6392\u5e8f\u7b97\u6cd5\u5bf9\u6bd4\u8868.md",
-      "name": { "zh": "\u6392\u5e8f\u7b97\u6cd5\u5bf9\u6bd4\u8868", "en": "Sorting Algorithms Comparison" }
+      "filename": "排序算法对比表.md",
+      "name": { "zh": "排序算法对比表", "en": "Sorting Algorithms Comparison" }
     },
     {
       "id": "regex",
-      "filename": "\u6b63\u5219\u8868\u8fbe\u5f0f\u8bed\u6cd5\u901f\u67e5\u8868_PAIGC.md",
-      "name": { "zh": "\u6b63\u5219\u8868\u8fbe\u5f0f\u8bed\u6cd5\u901f\u67e5\u8868 (PAIGC)", "en": "Regex Syntax Cheat Sheet (PAIGC)" }
+      "filename": "正则表达式语法速查表_PAIGC.md",
+      "name": { "zh": "正则表达式语法速查表 (PAIGC)", "en": "Regex Syntax Cheat Sheet (PAIGC)" }
     },
     {
       "id": "terminal-escape",
-      "filename": "\u7ec8\u7aef\u8f6c\u4e49\u5e8f\u5217\u901f\u67e5\u8868_PAIGC.md",
-      "name": { "zh": "\u7ec8\u7aef\u8f6c\u4e49\u5e8f\u5217\u901f\u67e5\u8868 (PAIGC)", "en": "Terminal Escape Sequences (PAIGC)" }
+      "filename": "终端转义序列速查表_PAIGC.md",
+      "name": { "zh": "终端转义序列速查表 (PAIGC)", "en": "Terminal Escape Sequences (PAIGC)" }
     }
   ]
 }
