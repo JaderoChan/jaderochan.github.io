@@ -4,18 +4,18 @@
   "forks": 1,
   "language": "C++",
   "language_breakdown": {
-    "C++": 96.6,
-    "CMake": 3.4
+    "C++": 96.7,
+    "CMake": 3.3
   },
-  "commits": 338,
+  "commits": 340,
   "has_release": true,
   "latest_release": "v2.1.0",
   "default_branch": "main",
-  "commit_hash": "23e02ae0c0c35ebdf61b70f6a77fde8bab261f3c",
+  "commit_hash": "ee46a66245a48f2fd0eff6b24c5f6e7d9bf17deb",
   "readme": {
     "zh": "readme_zh.md",
     "en": "readme_en.md"
   },
   "screenshot": null,
-  "updated_at": "2026-10-21T00:55:05.443Z"
+  "updated_at": "2026-10-21T18:29:55.957Z"
 }
