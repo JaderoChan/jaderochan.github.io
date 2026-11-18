@@ -6,11 +6,11 @@
   },
   "featured_projects": [
     {
-      "name": "HID Tool",
-      "url": "https://github.com/JaderoChan/hidtool",
+      "name": "MC NBT",
+      "url": "https://github.com/JaderoChan/mcnbt",
       "description": {
-        "zh": "跨平台 HID 输入库，覆盖键盘/鼠标监听与模拟，支持 Windows、macOS、Linux；提供线程安全单例设计、静态/动态库构建、以及 C 与 Python 绑定，适合自动化与系统级输入控制场景。仓库同时包含示例与接口边界设计，便于按模块接入现有桌面端或工具链项目，并支持后续扩展更多输入设备适配能力。",
-        "en": "A cross-platform HID input library for keyboard/mouse event listening and simulation across Windows, macOS, and Linux, with thread-safe singleton modules, static/shared build options, and C/Python bindings for automation and system-level input workflows. The repository also includes integration-oriented interface boundaries and examples for easier adoption in existing desktop and tooling stacks, with room for future extension to broader device adaptation."
+        "zh": "面向 Minecraft NBT 的高性能 Header-only 读写库，支持 Java/基岩版字节序、SNBT 与 gzip 解压流程，并提供便捷 Tag 构造与结构化编辑接口，适合地图工具与数据处理项目直接嵌入。仓库强调零侵入集成与清晰数据模型，便于快速开发编辑器或批处理工具，也适合在现有服务中作为独立 NBT 处理模块复用。",
+        "en": "A high-performance header-only library for Minecraft NBT parsing and writing, supporting Java/Bedrock endianness, SNBT, and gzip workflows, with convenient tag construction and editing APIs for map tools and data-processing pipelines. The design emphasizes low-friction embedding and a clear data model for quickly building editors and batch processing utilities, and it can also be reused as a standalone NBT module in existing services."
       }
     },
     {
@@ -19,14 +19,6 @@
       "description": {
         "zh": "独立全局热键库，提供 Register 与 Hook 两类管理器，支持控制台与 GUI 程序并兼容 Windows/macOS/Linux；可配合 C/Python 绑定使用，适用于跨平台快捷键服务、事件分发与应用级热键集成。项目将平台差异封装在统一接口下，方便构建可扩展的快捷键系统，并降低多平台维护时的接口分裂成本。",
         "en": "An independent global hotkey library with both register-based and hook-based managers, designed for console and GUI applications on Windows/macOS/Linux, with C/Python bindings for cross-platform shortcut services and event-driven integrations. It encapsulates platform differences behind a unified API so hotkey systems can scale with fewer platform-specific branches and lower long-term multi-platform maintenance costs."
-      }
-    },
-    {
-      "name": "MC NBT",
-      "url": "https://github.com/JaderoChan/mcnbt",
-      "description": {
-        "zh": "面向 Minecraft NBT 的高性能 Header-only 读写库，支持 Java/基岩版字节序、SNBT 与 gzip 解压流程，并提供便捷 Tag 构造与结构化编辑接口，适合地图工具与数据处理项目直接嵌入。仓库强调零侵入集成与清晰数据模型，便于快速开发编辑器或批处理工具，也适合在现有服务中作为独立 NBT 处理模块复用。",
-        "en": "A high-performance header-only library for Minecraft NBT parsing and writing, supporting Java/Bedrock endianness, SNBT, and gzip workflows, with convenient tag construction and editing APIs for map tools and data-processing pipelines. The design emphasizes low-friction embedding and a clear data model for quickly building editors and batch processing utilities, and it can also be reused as a standalone NBT module in existing services."
       }
     },
     {
@@ -39,11 +31,28 @@
       }
     },
     {
+      "name": "HID Tool",
+      "url": "https://github.com/JaderoChan/hidtool",
+      "description": {
+        "zh": "跨平台 HID 输入库，覆盖键盘/鼠标监听与模拟，支持 Windows、macOS、Linux；提供线程安全单例设计、静态/动态库构建、以及 C 与 Python 绑定，适合自动化与系统级输入控制场景。仓库同时包含示例与接口边界设计，便于按模块接入现有桌面端或工具链项目，并支持后续扩展更多输入设备适配能力。",
+        "en": "A cross-platform HID input library for keyboard/mouse event listening and simulation across Windows, macOS, and Linux, with thread-safe singleton modules, static/shared build options, and C/Python bindings for automation and system-level input workflows. The repository also includes integration-oriented interface boundaries and examples for easier adoption in existing desktop and tooling stacks, with room for future extension to broader device adaptation."
+      }
+    },
+    {
       "name": "Taylor Series Compute Log",
       "url": "https://github.com/JaderoChan/Taylor-Series-compute-log",
       "description": {
         "zh": "以泰勒级数实现 ln() 计算的数学与工程练习项目，不依赖标准数学库，结合浮点表示分解与参数标准化策略（如 2/3、√2/2 缩放）提升数值精度，并附带精度/性能对比实验。项目完整展示从公式推导到工程实现的路径，适合用于数值方法学习与性能验证，也便于对比不同优化策略在误差与速度上的权衡。",
         "en": "A mathematical and engineering practice project implementing ln() via Taylor series without relying on the standard math library, combining floating-point decomposition and normalization strategies (e.g., 2/3 and √2/2 scaling) to improve precision, with benchmark comparisons included. It demonstrates an end-to-end path from formula reasoning to practical implementation for numerical-method learning and performance validation, including trade-off analysis across optimization strategies."
+      }
+    },
+    {
+      "name": "MCBE Toolbox",
+      "url": "https://github.com/JaderoChan/MCBEToolbox",
+      "screenshot": "docs/assets/screenshots/pixel_art_generator_dark_en.png",
+      "description": {
+        "zh": "一个面向 Minecraft 基岩版（MCBE） 内容创作者的工具箱：将图片 / 视频 / GIF 转换为方块图片、方块视频、像素画结构文件或函数文件；对 NBT 文件进行读写、互转 Java 版与基岩版的 NBT、SNBT 的序列化与反序列化等。",
+        "en": "A toolbox for Minecraft Bedrock Edition (MCBE) content creators: convert images, videos and GIFs into block images, block videos, pixel-art structure files or function files; read and write NBT files, convert between Java Edition and Bedrock Edition NBT, and serialize/deserialize SNBT, and more."
       }
     },
     {
