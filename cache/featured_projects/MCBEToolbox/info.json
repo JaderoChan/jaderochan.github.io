@@ -1,0 +1,24 @@
+{
+  "name": "MCBEToolbox",
+  "stars": 1,
+  "forks": 0,
+  "language": "C++",
+  "language_breakdown": {
+    "C++": 96.3,
+    "CMake": 2.1,
+    "Python": 1.4,
+    "C": 0.2,
+    "Shell": 0
+  },
+  "commits": 455,
+  "has_release": true,
+  "latest_release": "v1.0.0",
+  "default_branch": "main",
+  "commit_hash": "84cb67526c3a7e36f9a42ac16b4252e14f4ace76",
+  "readme": {
+    "zh": "readme_zh.md",
+    "en": "readme_en.md"
+  },
+  "screenshot": "assets/screenshot.jpg",
+  "updated_at": "2026-11-18T11:19:54.242Z"
+}
