@@ -10,15 +10,15 @@
     "C": 0.2,
     "Shell": 0
   },
-  "commits": 455,
+  "commits": 458,
   "has_release": true,
   "latest_release": "v1.0.0",
   "default_branch": "main",
-  "commit_hash": "84cb67526c3a7e36f9a42ac16b4252e14f4ace76",
+  "commit_hash": "42be8cc8b7e642675957826154d75f754b272c6d",
   "readme": {
     "zh": "readme_zh.md",
     "en": "readme_en.md"
   },
   "screenshot": "assets/screenshot.jpg",
-  "updated_at": "2026-11-18T11:19:54.242Z"
+  "updated_at": "2026-11-19T12:22:59.381Z"
 }
